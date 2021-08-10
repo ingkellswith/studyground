@@ -1,5 +1,5 @@
-ingkellswith의 studyground입니다.
+필요에 의한, 이유가 있는 공부를 지향하는 ingkellswith의 studyground입니다.
 =====================================================
 ##### since 2021-08-07 ~
 
-![library](https://user-images.githubusercontent.com/55550753/128522419-40db4340-080f-4a6f-a539-2aba6cebefb3.jpg)
+![cherry](https://user-images.githubusercontent.com/55550753/128875180-6754bc46-da69-48d4-a700-783269f9170c.jpg)
