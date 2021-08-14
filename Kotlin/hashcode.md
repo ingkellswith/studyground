@@ -46,12 +46,17 @@ equals()는 실제 값을 비교한다, 즉 논리적으로 비교하는 것이�
 그런데 String이나 Int같은 값의 비교는 hashcode와 equals로 할 수 있지만, 위에서 false가 나온 것으로 보아 알 수 있듯이  
 객체 비교를 하려면 equals()와 hashcode()를 override해서 사용해야 한다.  
 이 메서드들은 객체의 어떤 필드를 비교의 대상에 넣어야 하는지 모르기 때문이다. 그렇기에 사용자가 직접 equals()와 hashcode()를 재정의하는 것이다.  
-한 메서드만 override하면 되지 않느냐는 물음도 있을 수 있다.  
+equals()와 hashcode() 둘 중 한 메서드만 override하면 되지 않느냐는 물음도 있을 수 있다.  
 하지만 그렇게 하는 것은 Collection(HashSet, HashMap, HashTable)을 사용할 때 문제가 발생한다.  
 이 Collection들은 위에서 봤던 그림과 같은 과정을 거쳐 동등성 비교를 하게 되기 때문이다.  
 
 그렇기에 자바에서의 equals(), hashcode()의 override는 상당히 번거로운 뿐더러, 재정의할 때마다 논리적 이상이 있는지 점검해야하고, 실수하기도 쉬운 것이다.  
-하지만 우리에겐 코틀린이 있다..! 자바를 사용하지 않고 코틀린을 사용하게 되면 이 문제에서 자유로워질 수 있다.  
+이 문제를 위해 자바 롬복에서는 @Data 어노테이션을 만들어 두었다.  
+
+자바에서 클래스에 @Data를 붙이게 되면 일반적으로 많이 쓰게 되는 getter, setter, equals, hashcode, toString, 기본 생성자를 만들어준다.
+
+이제 코틀린으로 넘어가자.  
+롬복의 @Data 어노테이션이 코틀린에서는 data class와 비슷하다.   
 
 아래 코드를 보자.  
 
@@ -75,7 +80,8 @@ equals()는 실제 값을 비교한다, 즉 논리적으로 비교하는 것이�
     false
 
 코틀린에서 ==는 논리적 동등성 비교를, ===는 주소 비교(물리적 동등성 비교)를 한다.  
-결과값이 false가 나왔으므로 메서드 재정의를 해야하나 생각할 수 있다. 하지만 그럴 필요가 없다. 아래 코드를 보자.
+Test class에서는 equals(), hashcode()가 재정의 되지 않았으므로 첫번째 줄이 false가 나온다.  
+data를 선언한 아래 코드를 보자.  
 
     fun main(args: Array<String>) {
         val c = Test("yap",10)
@@ -96,8 +102,7 @@ equals()는 실제 값을 비교한다, 즉 논리적으로 비교하는 것이�
     true
     false
 
-Test 클래스에 data만 붙인 것으로 객체 비교가 가능해졌다.  
-자바에서 객체 비교를 할 때보다 훨씬 편해졌다. data한 단어만 붙이면 되니까 말이다.  
+Test 클래스에 data만 붙인 것으로 객체 내부 값의 비교가 가능해졌다.  
 이 data class는 dto에서 자주 사용하게 되므로 유념해두어야 한다.   
 또한 equals, hashcode 멤버만 derive한 것이 아니라  
 다른 자주 쓰는 toString(), componentN(), copy()도 derive해준다.  
