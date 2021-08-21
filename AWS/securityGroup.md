@@ -11,35 +11,36 @@
 (보안 그룹의 inbound rule은 접근 가능한 포트에 대한, 접근 가능한 ip를 설정해서 접근 제한을 할 수 있다.    
 그렇기에, 보안 그룹만 잘 설정해주면 어떻게 접근 제한을 할 것인지 결정할 수 있는 것이다.)  
 
-답은 dns를 통한 네트워크 구조에 있었다.  
+답은 route53을 통한 네트워크 구조에 있었다.  
 
-직접적인 서버 ip로의 접근은 dns를 거치지 않지만, www.example.com처럼 도메인 네임을 사용하면 dns를 거치게 된다.  
-따라서 dns가 가리키는 레코드 값을 볼 필요가 있다.  
+직접적인 서버 ip로의 접근은 route53를 거치지 않지만, www.example.com처럼 도메인 네임을 사용하면 route53을 거치게 된다.  
+따라서 route53이 가리키는 레코드 값을 볼 필요가 있다.  
  
 즉, 로드밸런서를 inbound rule에 추가해야 정상적으로 통신할 수 있었던 이유는   
 route53에서 개발 서버에 해당하는 도메인 네임이 레코드 값으로 aws 로드 밸런서를 가지고 있었기 때문이다.
 
-개발서버에 도메인 네임을 사용해서 접근하기를 요청하면 dns가 request를 개발 서버 도메인 네임에 해당하는 레코드 값으로 전달한다.  
+개발서버에 도메인 네임을 사용해서 접근하기를 요청하면 route53이 request를 개발 서버 도메인 네임에 해당하는 레코드 값으로 전달한다.  
 그리고 그 레코드 값이 aws 로드 밸런서 였으므로 aws 로드 밸런서는 request를 다시 개발 서버인 ec2로 보낸다.  
 이 과정에서 로드 밸런서의 ip값도 ec2가 허용을 해야, 로드 밸런서의 request를 보고 어떤 ip가 요청했는지 볼 수 있기 때문에  
 inbound rule에 로드 밸런서의 ip를 추가했어야 했던 것이다.  
 
 아래 다이어그램을 보자.  
 
-![aws-network1](https://user-images.githubusercontent.com/55550753/130100358-9709e81e-01fe-4eee-8163-61d9f7391dfd.PNG)  
+![aws-network1](https://user-images.githubusercontent.com/55550753/130307157-4a06dbf4-5f36-4908-b668-356b6db113c9.PNG)
 
-ip로 직접 접근해 dns를 사용하지 않는 경우이다.  
+ip로 직접 접근해 route53을 사용하지 않는 경우이다.  
 
-아래 다이어그램은 domain name을 사용해서 request가 dns > 로드밸런서 > ec2 순서로 전달되는 경우이다.  
+아래 다이어그램은 domain name을 사용해서 request가 route53 > 로드밸런서 > ec2 순서로 전달되는 경우이다.  
+로드밸런서도 ip를 가지고 있기 때문에, ec2로 오는 요청 ip에 대해 접근 제한을 하려면, 로드밸런서의 ip를 ec2의 보안그룹-인바운드룰에서 허용해줘야 한다.  
 
-![aws-network2](https://user-images.githubusercontent.com/55550753/130100453-86dfbeef-0ef3-4795-8855-e381fa4dd8a0.PNG)  
+![aws-network2](https://user-images.githubusercontent.com/55550753/130307162-760a6880-bebf-49b9-a343-4cd41298f3b0.PNG)
 
 물론 레코드 값에서 로드밸런서 ip를 사용하지 않고 ec2 ip를 사용한다면 아래 다이어그램처럼 되겠다.  
 즉 route53에서의 레코드값이 로드밸런서 ip가 아니라 ec2 ip인 것이다.  
 
-![aws-network3](https://user-images.githubusercontent.com/55550753/130104277-bb667ccf-8ada-496b-8d70-617b461f5737.PNG)  
+![aws-network3](https://user-images.githubusercontent.com/55550753/130307168-d23c03ea-3d95-4929-89f9-b5228412ba0f.PNG)
 
 이 경우에는 로드밸런서를 사용하지 않으므로 특정 ip에서만 요청을 받고 싶을 경우, 인바운드 규칙에 공인 ip만 넣어주면 되는 것이다.  
- 
-이렇게 정리해본 dns를 사용하는 네트워크 구조와, ip로 직접 접근하는 네트워크 구조는 구별해서 기억해야 할 중요한 개념이다.  
+
+이렇게 정리해본 route53을 사용하는 네트워크 구조와, ip로 직접 접근하는 네트워크 구조는 구별해서 기억해야 할 중요한 개념이다.  
 
