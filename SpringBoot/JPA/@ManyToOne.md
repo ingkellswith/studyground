@@ -101,7 +101,7 @@ jpa를 사용한 Member클래스와 Team클래스 코드를 예시로 보자.
     Member member = em.find(Member.class, "member1");
     Team team = member.getTeam();
 
-em.persist()는 spring data jpa의 repository.save()와 비슷하다고 생각해주면 편하다.  
+em.persist()는 엔티티 매니저가 관리하는 영속성 콘텍스트에 엔티티를 넣는 것이다.  
 위 코드는 객체 지향적으로 member1의 연관관계에 있는 team을 참조하는 모습을 보여준다.  
 
 이 사실이 별 것 아닌 것처럼 보일 수 있지만 nodejs에서는 객체 지향 프로그래밍을 사용하지 않았기 때문에   
