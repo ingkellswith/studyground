@@ -56,7 +56,7 @@ equals()와 hashcode() 둘 중 한 메서드만 override하면 되지 않느냐�
 자바에서 클래스에 @Data를 붙이게 되면 일반적으로 많이 쓰게 되는 getter, setter, equals, hashcode, toString, 기본 생성자를 만들어준다.
 
 이제 코틀린으로 넘어가자.  
-롬복의 @Data 어노테이션이 코틀린에서는 data class와 비슷하다.   
+롬복의 @Data 어노테이션과 코틀린의 data class는 비슷한 부분이 있다.   
 
 아래 코드를 보자.  
 
@@ -106,7 +106,7 @@ Test 클래스에 data만 붙인 것으로 객체 내부 값의 비교가 가능
 이 data class는 dto에서 자주 사용하게 되므로 유념해두어야 한다.   
 또한 equals, hashcode 멤버만 derive한 것이 아니라  
 다른 자주 쓰는 toString(), componentN(), copy()도 derive해준다.  
-이 멤버들은 추후 포스팅하도록 하겠다.  
+이 data class에 대해서 추후 포스팅하도록 하겠다.  
 
 코틀린 공식문서
 : https://kotlinlang.org/docs/data-classes.html
