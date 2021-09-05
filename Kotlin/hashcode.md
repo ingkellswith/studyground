@@ -104,7 +104,12 @@ data를 선언한 아래 코드를 보자.
 
 Test 클래스에 data만 붙인 것으로 객체 내부 값의 비교가 가능해졌다.  
 이 data class는 dto에서 자주 사용하게 되므로 유념해두어야 한다.   
-또한 equals, hashcode 멤버만 derive한 것이 아니라  
+
+또한, data class의 hashcode는 논리적 값이 같다면 같은 고유값을 반환한다.  
+즉, 위의 c.hashCode()와 d.hashCode()는 같은 값을 반환한다.  
+일반 class의 hashcode는 논리적 값이 같아도 다른 고유값을 반환할 것이다.    
+
+data class는 equals, hashcode 멤버만 derive한 것이 아니라  
 다른 자주 쓰는 toString(), componentN(), copy()도 derive해준다.  
 이 data class에 대해서 추후 포스팅하도록 하겠다.  
 
