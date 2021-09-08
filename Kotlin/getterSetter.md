@@ -56,7 +56,9 @@ data class 사용
 또한, 이러한 "Test(a=yap, b=10)"같은 스트링이 아니라, {"a":"yap", "b":"10"} 이렇게 object형태로 사용하고 싶다면  
 jackson의 objectmapper를 사용하면 된다.  
 
-    objectMapper.writeValueAsString()  
+    val requestJson = objectMapper.writeValueAsString()  // 스트링 자료형의 JSON출력
+    val jsonSend = JSONParser().parse(requestJson) as JSONObject   // 스트링 자료형의 json을 JSONObject 자료형으로 변경
+    objectMapper.convertValue(jsonSend, className) // JSONObject를 className에 해당하는 클래스 타입으로 변경
 
 ## Getter, Setter
 
