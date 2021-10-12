@@ -2,9 +2,9 @@
 ===
 # 참조
 [B-Tree 인덱스 구조](https://beelee.tistory.com/37)   
-[DB 인덱스를 효과적으로 설정하는 방법 - 고려해야 할 4가지](https://yurimkoo.github.io/db/2020/03/14/db-index.html)
-[[mysql] 인덱스 정리 및 팁](https://jojoldu.tistory.com/243)
-[[mysql] MySQL IN절을 통한 성능 개선 방법](https://jojoldu.tistory.com/565?category=761883)
+[DB 인덱스를 효과적으로 설정하는 방법 - 고려해야 할 4가지](https://yurimkoo.github.io/db/2020/03/14/db-index.html)  
+[[mysql] 인덱스 정리 및 팁](https://jojoldu.tistory.com/243)  
+[[mysql] MySQL IN절을 통한 성능 개선 방법](https://jojoldu.tistory.com/565?category=761883)  
 
 # BTree
 ![btree](https://user-images.githubusercontent.com/55550753/128523178-481b7cce-201b-4eb2-b566-18b9c0df8c6e.png)  
