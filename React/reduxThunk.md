@@ -1,5 +1,9 @@
 redux-thunk
 ============
+# Reference
+[리덕스(Redux)를 왜 쓸까? 그리고 리덕스를 편하게 사용하기 위한 발악 (i)](https://velopert.com/3528)  
+
+# redux-thunk란
 기존에 redux를 사용할 때 api를 요청하게 되면 redux-thunk를 사용했는데 redux-thunk의 정확한 개념은 무엇인지 알고 있지 않았다.  
 그래서 이번에 정리를 하게 되었다.  
 
