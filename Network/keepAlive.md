@@ -1,6 +1,6 @@
 Http Keep Alive
 ===
-# 참조
+# Reference
 [HTTP Keep Alive and TCP keep alive](https://stackoverflow.com/questions/9334401/http-keep-alive-and-tcp-keep-alive)  
 [HTTP is statel-less,so what does it mean by keep-alive?](https://stackoverflow.com/questions/6060959/http-is-statel-less-so-what-does-it-mean-by-keep-alive)  
 [[Stateful/Stateless] Stateful vs. Stateless 서비스와 HTTP 및 REST](https://5equal0.tistory.com/entry/StatefulStateless-Stateful-vs-Stateless-%EC%84%9C%EB%B9%84%EC%8A%A4%EC%99%80-HTTP-%EB%B0%8F-REST)  
