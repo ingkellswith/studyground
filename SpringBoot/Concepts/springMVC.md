@@ -12,7 +12,8 @@ Spring MVC
 [스택, 힙, 코드, 데이터영역](https://selfish-developer.com/entry/%EC%8A%A4%ED%83%9D-%ED%9E%99-%EC%BD%94%EB%93%9C-%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%98%81%EC%97%AD)  
 [자바 메모리관리 - 스택 & 힙](https://yaboong.github.io/java/2018/05/26/java-memory-management/)  
 [멀티 스레드 환경과 스프링 빈](https://doflamingo.tistory.com/44)  
-[멀티 스레드 환경에서 스프링 빈 주의사항](https://beyondj2ee.wordpress.com/2013/02/28/%EB%A9%80%ED%8B%B0-%EC%93%B0%EB%A0%88%EB%93%9C-%ED%99%98%EA%B2%BD%EC%97%90%EC%84%9C-%EC%8A%A4%ED%94%84%EB%A7%81%EB%B9%88-%EC%A3%BC%EC%9D%98%EC%82%AC%ED%95%AD/)  
+[멀티 스레드 환경에서 스프링 빈 주의사항](https://beyondj2ee.wordpress.com/2013/02/28/%EB%A9%80%ED%8B%B0-%EC%93%B0%EB%A0%88%EB%93%9C-%ED%99%98%EA%B2%BD%EC%97%90%EC%84%9C-%EC%8A%A4%ED%94%84%EB%A7%81%EB%B9%88-%EC%A3%BC%EC%9D%98%EC%82%AC%ED%95%AD/)
+[인프런 - 스프링 MVC 1편 - 백엔드 웹 개발 핵심 기술](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-mvc-1)
 
 # Servlet이란
 자바로 동적 웹페이지를 보여주기 위해 사용하는 인터페이스
@@ -202,7 +203,20 @@ Spring Web MVC에서는 url마다 servlet 구현체를 생성해 비효율적인
 
 # Dispatcher Servlet 동작 과정
 
-![dispatcher-servlet](https://user-images.githubusercontent.com/55550753/136683127-cb88498c-ed63-4387-96f3-2724d16483df.PNG)
+![spring-mvc-structure](https://user-images.githubusercontent.com/55550753/142755259-ecc9192b-071a-4d9e-bde7-b2cdcd2fea00.PNG)
+
+- 핸들러 매핑에서 요청 url에 매핑되는 핸들러를 가져온다.
+- 핸들러 어댑터 목록에서 루프를 돌며 그 핸들러를 support하는 지 체크한다.
+- @RestController나 @ResponseBody를 사용하면 ViewResolver를 실행하지 않고 http 메시지 바디에 직접 입력된다.
+
+![spring-argument-resolver](https://user-images.githubusercontent.com/55550753/142755405-cfac1d93-5e36-4573-b6aa-e4af04f5f751.PNG)
+
+- 핸들러 어댑터에서 컨트롤러를 호출할 때 컨트롤러에서 HttpServletRequest, HttpEntity, @RequestHeader 등을 유연하게 사용할 수 있다.
+- 그 이유는 컨트롤러 호출 이전에 Argument Resolver를 먼저 호출해 작업하기 때문이다.
+- ArgumentResolver의 supportsParameter()를 호출해서 해당 파라미터를 지원하는지 체크하고, 지원하면 resolveArgument()를 호출해서 실제 객체를 생성한다. 
+- 그리고 이렇게 생성된 객체가 컨트롤러 호출시 넘어가는 것이다.
+- 그리고 @RequestBody, @ResponseBody를 사용할 때 앞단에서 http message converter를 사용하기 때문에 json을 객체로 변환하거나, 객체를 json으로 변환해 사용가능하다.
+
 
 
 
