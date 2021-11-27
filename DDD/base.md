@@ -1,6 +1,6 @@
 DDD(Domain Driven Design)
 ===========================
-(아래 내용은 이희창님의 MSA강의를 듣고 기록한 내용입니다.)  
+(수강 강의 - 패스트캠퍼스, The RED : 비즈니스 성공을 위한 Java/Spring 기반 서비스 개발과 MSA 구축 by 이희창)
 
 스프링 부트를 실무로 진행하고 또 공부해나가면서 궁금한 것이 정말 많았다.  
 그 중에서도 스프링 부트 코드의 전반적인 구조를 담당하는 DDD에 대해 먼저 기록하려 한다.  
@@ -18,7 +18,7 @@ interface를 선언하면 jpa에서 알아서 구현체를 만들어주는 것�
 
 그렇다면 application과 domain은 어떻게 이해해야 할까?  
 사실 그냥 그런게 있구나 하고 넘어가도 되는데 그렇지 못하는 이유가 내가 이전에 알고 있던  
-스프링 웹계층 때문이다. 스프링 웹 계층과 DDD는 어떻게 비교할 지 분석이 필요하다.  
+스프링 웹 계층 때문이다. 스프링 웹 계층과 DDD는 어떻게 비교할 지 분석이 필요하다.  
 
 ![spring-web-layer](https://user-images.githubusercontent.com/55550753/129907942-d02b8ecb-ec17-4972-820a-d8f3196a4a28.png)  
 
@@ -26,7 +26,7 @@ interface를 선언하면 jpa에서 알아서 구현체를 만들어주는 것�
 다음으로, dto는 DDD의 interface, 웹 계층의 web layer에 존재하지만, dto를 다른 계층에도 전달하므로 웹 계층의 우측 상단에 위치한 것이 이해된다.  
 남은 스프링 웹 계층의 service layer, domain model는 어떻게 매칭 시켜야 DDD의 application, domain layer에 매칭될 수 있을까?  
 
-나의 결론은 웹 계층의 service layer와 domain model, DDD의 application과 domain layer가 공통으로 가져가는 핵심 개념이 '추상화'라고 이해하는 것이다.   
+**나의 결론은 웹 계층의 service layer와 domain model, DDD의 application과 domain layer가 공통으로 가져가는 핵심 개념이 '추상화'라고 이해하는 것이다.**   
 
 추상화라 함은 추상화를 시켜서 domain에 의존하는 것들의 코드를 바꿔도 domain의 로직은 유지될 수 있게 하는 것이다.  
 예시로 트래픽이 많아져 db를 mariadb에서 mongodb로 바꿔야 할 상황이 있을 수도 있는데   
