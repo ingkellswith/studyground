@@ -7,10 +7,10 @@
   * [보안 그룹](AWS/securityGroup.md)
 * [DB](DB/README.md)
   * [Articles](DB/dbArticles.md)
-  * [MySql]
+  * MySql
     * [인덱스](DB/MySql/index.md)
     * [조인](DB/MySql/joinBase.md)
-    * [조인ver2](DB/MySql/joinInRealProject.md)
+    * [조인 ver.2](DB/MySql/joinInRealProject.md)
 * [DDD](DDD/README.md)
   * [DDD에 대해](DDD/base.md)
   * [Domain Layer](DDD/domainDesign.md)
@@ -29,18 +29,18 @@
   * [Articles](Network/networkArticles.md)
   * [Keep-Alive](Network/keepAlive.md)
 * [React](React/README.md)
-  * [Articles](React/noIndexForKey.md)
+  * [map에서의 key값 사용](React/noIndexForKey.md)
   * [redux-thunk](React/reduxThunk.md)
   * [서버 사이드 렌더링](React/SSR.md)
   * [타입스크립트 세팅](React/tsSetting.md)
 * [Spring](Spring/README.md)
   * [Articles](Spring/springArticles.md)
-  * [Concepts]
+  * Concepts
     * [DTO와 VO](Spring/Concepts/dtoVo.md)
     * [로그](Spring/Concepts/log.md)
     * [테스트 코드](Spring/Concepts/testCode.md)
     * [Spring WebFlux](Spring/Concepts/springWebFlux.md)
-  * [JPA]
+  * JPA
     * [@ManyToMany](Spring/JPA/@ManyToMany.md)
     * [@ManyToOne](Spring/JPA/@ManyToOne.md)
     * [@OneToMany](Spring/JPA/@OneToMany.md)
@@ -48,5 +48,5 @@
     * [더티 체킹](Spring/JPA/dirtyChecking.md)
     * [N+1](Spring/JPA/nPlusOne.md)
     * [QueryDSL](Spring/JPA/querydsl.md)
-  * [SpringMVC]
+  * SpringMVC
     * [Spring MVC](Spring/SpringMVC/springMVC.md)
