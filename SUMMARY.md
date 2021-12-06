@@ -1,6 +1,6 @@
 # Table of contents
 
-* [🖋 스터디를 기록하는 공간](README.md)
+* [공부 기록 저장소](README.md)
 * [Spring](Spring/README.md)
   * [Articles](Spring/springArticles.md)
   * Concepts
