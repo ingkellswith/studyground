@@ -6,4 +6,4 @@ description: '#study'
 
 📒 공부한 내용들을 기록하는 공간입니다.
 
-GitBook : [깃북 링크](https://app.gitbook.com/s/RNFnKhcWydOmisMePc1e/)
+GitBook : [https://allover3773.gitbook.io/study/](https://allover3773.gitbook.io/study/)
