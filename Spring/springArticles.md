@@ -14,3 +14,9 @@ Spring Articles
 - 한 스프링 프로젝트에서의 여러 개의 database 사용법  
 [1. spring boot jpa Multiple datasource - 머루의개발블로그](http://wonwoo.ml/index.php/post/780)  
 [2. Spring JPA – Multiple Databases | Baeldung](https://www.baeldung.com/spring-data-jpa-multiple-databases)  
+
+- logback mdc  
+[1. MDC를 이용하여 쓰레드별로 로그 분류하기](https://bcho.tistory.com/1316)  
+
+- db connection timeout  
+[1. Spring boot Thread Pools 에러](https://do-hansung.tistory.com/41)
