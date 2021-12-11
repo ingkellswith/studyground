@@ -28,8 +28,7 @@
 
 @JoinTable과 @JoinColumn의 차이점은 @JoinTable은 연결 테이블을 지정하지만 @JoinColumn은 외래키를 지정한다는 것이다.  
 
-따라서 @JoinTable을 사용하기 위해서는 테이블이 하나 더 필요한 셈이다.  
-그렇기에 @JoinColumn이 @JoinTable보다 많이 사용된다. 물론 필요한 상황에서는 @JoinTable을 사용할 수 있다.  
+따라서 @JoinTable을 사용하기 위해서는 테이블이 하나 더 필요한 셈이다.   
 
     @Entity
     public class Product {
@@ -42,15 +41,16 @@
     }
 
 위는 다대다 양방향 관계의 Product 엔티티이다.  
-다대일 관계에서 봤던 것처럼 mappedBy를 쓰면 쉽게 사용가능하다.  
+다대일 관계에서 봤던 것처럼 mappedBy를 쓰면 사용가능하다.  
 
-이런 @ManyToMany는 실제로는 자주 사용되지 않는다.  
-왜냐하면 연결 테이블에 추가적인 컬럼을 추가하기가 어렵기 때문이다.  
-연결 테이블에 추가적인 컬럼을 추가한다면, Member나 Product엔티티에서 그것을 참조할 수 있어야 하는데,
-그렇게 하기가 힘들기 때문이다.  
+이런 @ManyToMany는 실제로는 사용하지 않는 것이 좋다.   
+왜냐하면 연결 테이블에 추가적인 컬럼을 추가할 수 없기 때문이다.   
+연결 테이블에 추가적인 컬럼을 추가한다면, Member나 Product엔티티에서 그것을 참조할 수 있어야 하는데,  
+그렇게 할 수 없기 때문이다.  
+
 즉 테이블의 확장성이 떨어지게 되는 것이다.  
 
-그렇기에 @ManyToMany대신 @ManyToOne + @ManyToOne 구조를 가져가는 것이 일반적이다.  
+그렇기에 **@ManyToMany대신 @ManyToOne + @ManyToOne 구조를 가져가야 한다.**  
 
 
 
