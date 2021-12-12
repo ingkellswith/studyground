@@ -95,6 +95,7 @@ Test생성자에서 변수를 var로 선언해서 새로운 값 할당이 가능
 이제 getter, setter를 제한해보자.  
 
 아래 코드와 같이 변수를 val으로 선언하면 setter를 사용할 수 없게 된다.  
+근데 문제는 val이므로 data class내부에서도 값을 바꿀 수가 없다.
 또한 아직 접근 제한자가 public이므로 getter는 사용할 수 있다.   
 
     fun main(args: Array<String>) {
@@ -113,8 +114,8 @@ Test생성자에서 변수를 var로 선언해서 새로운 값 할당이 가능
 
     {error...}
 
-하지만 이렇게 되면 한 번 생성한 인스턴스의 멤버들을 바꿀 수 있는 방법이 없게 된다.
-따라서 인스턴스 내부에서만 바꿀 수 있게 설정할 필요가 있다.
+이렇게 되면 한 번 생성한 인스턴스의 멤버들을 바꿀 수 있는 방법이 없다.  
+따라서 값을 바꿀 수 있게 설정하려면 결국 var을 선언해야 한다.  
 
     fun main(args: Array<String>) {
         val c = Test("yap",10)
@@ -132,8 +133,10 @@ Test생성자에서 변수를 var로 선언해서 새로운 값 할당이 가능
     }
 
 var a 선언으로 값을 바꿀 수 있게 설정했고, private로 내부에서만 값을 바꿀 수 있게 했다.  
-이렇게 사용하면 setter를 사용제한할 수 있고,  
-getter도 마찬가지로 private접근 제한자를 사용해서 외부의 사용을 차단할 수 있다.  
+이렇게 사용하면 setter를 사용제한할 수 있다.  
+근데 새로 생긴 문제는 여기에서 a필드에 대해 private를 선언했으므로 getter를 사용할 수 없다는 단점이 존재한다.  
+
+더 알아보고 싶다면 [kotlin entity에서 setter를 막을 수 있을까](https://multifrontgarden.tistory.com/272)를 읽어보자.  
 
 ## Custom Getter, Setter
 
@@ -171,17 +174,9 @@ getter도 마찬가지로 private접근 제한자를 사용해서 외부의 사�
 
 위에서 get(), set()에 field와 value가 사용되었는데, 이는 예약어이므로 기억해두는 것이 좋겠다.  
 
-커스텀 getter, setter를 사용하면 get할 때 field.toUpperCase()를 사용해서 소문자가 아닌 대문자로 get이 가능하게 되는 등 편의성이 증진된다.   
+커스텀 getter, setter를 사용하면 get할 때 field.toUpperCase()를 사용해서 소문자가 아닌 대문자로 get이 가능하게 되는 등 편의성이 증진될 수도 있다.   
 
-자바의 getter, setter와 코틀린의 getter, setter를 비교했을 때 차이점은  
+정리하면 자바의 getter, setter와 코틀린의 getter, setter를 비교했을 때 차이점은  
 자바는 setName(), getName()이렇게 set, get을 써주어 명시적으로 사용하지만  
 코틀린은 getter, setter 모두 instance.name 같은 형태로 사용한다는 점이다.  
-
-그리고 자바는 getter, setter가 없는 상태에서 getter, setter를 롬복을 사용해 만들어나가는 느낌이라면,  
-코틀린은 기본적으로 getter, setter가 만들어져 있고 접근 제한자, 변수 타입을 통해서   
-getter, setter의 사용을 제한하는 느낌이 강하다.  
-
-    `자바스크립트에 익숙한 나에게, 코틀린의 getter, setter는   
-    자바스크립트에서 object를 사용할 때와 비슷하기도 하고,  
-    get, set같은 자주 쓰는 반복된 코드를 덜어줄 수 있어서 좋은 특성이라고 생각된다.`  
 
