@@ -9,12 +9,15 @@
     * [테스트 코드](Spring/Concepts/testCode.md)
     * [Spring WebFlux](Spring/Concepts/springWebFlux.md)
   * JPA
-    * [@ManyToMany](Spring/JPA/@ManyToMany.md)
     * [@ManyToOne](Spring/JPA/@ManyToOne.md)
     * [@OneToMany](Spring/JPA/@OneToMany.md)
     * [@OneToOne](Spring/JPA/@OneToOne.md)
+    * [@ManyToMany](Spring/JPA/@ManyToMany.md)
     * [더티 체킹](Spring/JPA/dirtyChecking.md)
     * [N+1](Spring/JPA/nPlusOne.md)
+    * [Spring Data Jpa](Spring/JPA/springDataJpa.md)
+    * [Paging](Spring/JPA/paging.md)
+    * [Auditing](Spring/JPA/auditing.md)
     * [QueryDSL](Spring/JPA/querydsl.md)
   * SpringMVC
     * [Spring MVC](Spring/SpringMVC/springMVC.md)

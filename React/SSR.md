@@ -9,7 +9,7 @@ SSR(Server Side Rendering)
 ### text/html 타입 (https://ohou.se/contents/card_collections/9229412?affect_type=CardIndex&affect_id=0)
 ![htmltype](https://user-images.githubusercontent.com/55550753/128595236-68f5fd1e-521a-442c-8262-b9f2881c42d9.PNG)
 
-대부분 이렇게 두 종류의 타입을 사용한다는 것은 알겠다.  
+이렇게 두 종류의 타입을 사용한다는 것은 알겠다.  
 첫번째 사진처럼 json으로 통신할 경우에는 클라이언트 측에서 서버에 json을 요청한 후   
 json응답을 반환하면 그 때 클라이언트측에서 렌더링하게된다. 내가 지금까지 해왔던 리액트는 csr이므로 이런 방식을 사용했다.  
 
