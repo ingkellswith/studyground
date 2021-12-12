@@ -6,16 +6,6 @@
 [[mysql] 인덱스 정리 및 팁](https://jojoldu.tistory.com/243)  
 [[mysql] MySQL IN절을 통한 성능 개선 방법](https://jojoldu.tistory.com/565?category=761883)  
 
-# BTree
-![btree](https://user-images.githubusercontent.com/55550753/128523178-481b7cce-201b-4eb2-b566-18b9c0df8c6e.png)  
-
-사진에서 볼 수 있듯이 n개의 키를 가진 노드는 n+1개의 자식노드를 가리키는 포인터로 구성된다.  
-BTree는 MySQL에서 기본 인덱스 유형으로 사용된다.  
-
-B-tree의 특징
-1) 노드들은 (자식 노드의 key개수/2) 보다 key개수가 작을 수 없다.
-2) 각 노드 데이터에서 작은 것은 왼쪽 / 높은 것은 오른쪽으로 나뉘어 분류된다. 즉, 노드와 데이터는 항상 정렬된 상태로 존재한다.
-
 # 카디널리티
 cardinality : 차수
 column의 차수가 높을수록 해당 column 데이터의 중복도가 낮음을 의미하고,
