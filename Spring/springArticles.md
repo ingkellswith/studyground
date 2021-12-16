@@ -1,8 +1,5 @@
 Spring Articles
 ===
-- 디자인 패턴  
-[1. 전략 패턴과 어댑터 패턴](https://siyoon210.tistory.com/166)  
-
 - 코틀린에서의 Entity  
 [1. kotlin(+JPA) entity 에서 setter 를 막을 수 있을까?](https://multifrontgarden.tistory.com/272)  
 
@@ -20,3 +17,6 @@ Spring Articles
 
 - db connection timeout  
 [1. Spring boot Thread Pools 에러](https://do-hansung.tistory.com/41)
+
+- Intellij
+[1. IntelliJ 디버깅 해보기](https://jojoldu.tistory.com/149)

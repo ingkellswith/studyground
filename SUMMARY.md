@@ -8,6 +8,7 @@
     * [로그](Spring/Concepts/log.md)
     * [테스트 코드](Spring/Concepts/testCode.md)
     * [Spring WebFlux](Spring/Concepts/springWebFlux.md)
+    * [Gradle](Spring/Concepts/gradle.md)
   * JPA
     * [@ManyToOne](Spring/JPA/@ManyToOne.md)
     * [@OneToMany](Spring/JPA/@OneToMany.md)
@@ -22,6 +23,7 @@
   * SpringMVC
     * [Spring MVC](Spring/SpringMVC/springMVC.md)
 * [React](React/README.md)
+  * [Articles](React/reactArticles.md)
   * [map에서의 key값 사용](React/noIndexForKey.md)
   * [redux-thunk](React/reduxThunk.md)
   * [서버 사이드 렌더링](React/SSR.md)
@@ -44,6 +46,7 @@
   * [데이터 클래스](JavaAndKotlin/dataClass.md)
   * [가비지 콜렉터](JavaAndKotlin/garbageCollector.md)
   * [게터와 세터](JavaAndKotlin/getterSetter.md)
+  * [디자인 패턴](JavaAndKotlin/pattern.md)
 * [Kafka](Kafka/README.md)
   * [Kafka 사용시 주의점](Kafka/kafkaPoint.md)
 * [Network](Network/README.md)
