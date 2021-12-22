@@ -1,35 +1,35 @@
 AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 ===========
-1. 보안 자격 증명 
+1) 보안 자격 증명 
 - Access Key는 루트 계정에 만들면 cli나 sdk로 루트 권한에 접근 하는것이므로 만들지 않는 것이 좋다.  
    
-2. IAM Roles 
+2) IAM Roles 
 - IAM Roles are like an user but they are intended to be used not by physical people,
 - but instead they will be by AWS services.
 
-1. 보안 관리
+3) 보안 관리
 - Credential report : csv로 유저별 access 히스토리 제공
 - Access Advisor : 권한 중에서 last accessed로 어떤 서비스가 필요없는 지 알 수 있음 
   
-4. IAM Policies
+4) IAM Policies
 - JSON documents that define a set of permissions for making requests to AWS services, and can be used by IAM Users, User Groups, and IAM Roles
   
-5. IAM User Groups can contain IAM Users and other User Groups. << False
+5) IAM User Groups can contain IAM Users and other User Groups. << False
 - IAM User Groups can contain only IAM Users. << True
 
 
-6. EC2 INSTANCE TYPE(33강)
+6) EC2 INSTANCE TYPE(33강)
 - general : t class
 - compute optimized(high performance) : c class
 - memory optimized : r class
 - storage optimized : I, D, H class
 
-7. 보안 그룹
+7) 보안 그룹
 - 한 보안 그룹이 여러 개의 인스턴스에 부착 가능
 - 한 인스턴스가 여러 보안 그룹을 가질 수도 있다. 
 - it's good to maintain one separate security group for ssh access
 
-8. classic port
+8) classic port
 - 22 : ssh
 - 21 : ftp
 - 22 : sftp(ssh를 사용한 ftp)
@@ -37,41 +37,41 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - 443 : https
 - 3389 : rdp(remote desktop protocol) - log into a windows instance
 
-9. 보안그룹을 인바운드룰에 추가하면 보안그룹이 부착된 인스턴스가 허용된다.  
+9) 보안그룹을 인바운드룰에 추가하면 보안그룹이 부착된 인스턴스가 허용된다.  
 따라서 ip나 port를 몰라도 인바운드가 허용될 수 있다.
 
-10. chmod 0400 << ssh 로그인 pem키 읽기 전용으로 권한 변경
+10) chmod 0400 << ssh 로그인 pem키 읽기 전용으로 권한 변경
 맥에서 이걸 해야 ssh -i로 로그인 가능
 
-11. never do aws configure at ec2 instance
+11) never do aws configure at ec2 instance
 - 왜냐하면 aws configure로 ec2에 iam의 권한을 줘버리면 ec2에 접근하는 다른 권한을 가진 iam도 그 권한을 획득하기 때문이다.  
   
-12. 
+12) 
 - instance ssh 접근 : pem key
 - aws cli 설정 : access key id, secret access key
   
-13. aws ec2 purchasing option
+13) aws ec2 purchasing option
 
-14. ec2 spot instances requests
+14) ec2 spot instances requests
 - spot instance used for batch jobs, data analysis, or workloads **that are resilieent to failures**
 - resilient to failures means that '실패해도 괜찮은 것' 정도?
   
-15. how to terminate spot instances
+15) how to terminate spot instances
 - 44강 참고
 
-16. Spot Fleets
+16) Spot Fleets
 - set of spot instances(optionaaly on-demand instance can be here)
 - spot fleets allow us to automatically request spot instances with the lowest price
 
-17. machines connect to www using **NAT** + **internet gateway(proxy)**
+17) machines connect to www using **NAT** + **internet gateway(proxy)**
     
-18. placement groups : 인스턴스들에 대해 물리적으로 그룹핑하는 것
+18) placement groups : 인스턴스들에 대해 물리적으로 그룹핑하는 것
 - cluster
 - spread
 - partition >> hadoop, kafka에 사용 
 - 대상 그룹을 만들고 인스턴스 생성 시 적용가능하다.
   
-19. elastic network interfaces
+19) elastic network interfaces
 - logical component in VPC
 - it represents a virtual network card
 - it gives **ec2 instances** access to the network 
@@ -84,40 +84,40 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
   - failover를 위해 eni를 **다른 ec2에 부착가능** 즉 eni는 이동가능하다는 것
   - **bound to** a specific availability zone(AZ)
 
-20. elastic network interface 설정
+20) elastic network interface 설정
 - description
 - subnet >> **서울 availability zone에서 a,b,c,d 선택**
 - ipv4할당 auto assign
 - **security group 설정**
 
-21. EC2 Nitro
+21) EC2 Nitro
 - it is next generation EC2 instance
 - new virtualization technology
 - higher speed EBS (MAX 64000 IOPS, whereas 32000 IOPS on none nitro / IOPS : io operation per second)
 - better security 
 - Virtualized와 Bare metal 모두 지원
 
-22. optimizing cpu option
+22) optimizing cpu option
 - core나 스레드(vCPU)를 billing 때문에 줄일 수 있다.  
 
-23. spot block instance
+23) spot block instance
 - 예를 들면 batch 작업중 1~6시간 정도되는 시간에는 interrupt를 막을 수 있음
 
-24. EBS Volumes
+24) EBS Volumes
 - they can only be mounted to one instance at a time
 - **bound to** a specific availability zone
 - network drive이기 떄문에 io에 use network한다. 따라서 a bit of latency가 생긴다.
 - snapshot은 az에 상관없이 옮길 수 있음
 - can increase capacity of drive over time
 
-25. AMI
+25) AMI
 - creating an AMI will also create EBS snapshots
 - like ebs, ami is built for a specific region and also can be copied across region
 
-26. EC2 hibernate
+26) EC2 hibernate
 - EC2 instance root volume type must be an ebs volume
 
-26. EC2 Instance Store
+27) EC2 Instance Store
 - 물리적으로 ec2와 붙어있기 때문에 high io performance 기대 가능
 - 하지만 instance를 stop하기만 해도 볼륨이 다 삭제됨
 - 캐시, 버퍼, 일시적 데이터 저장에 사용
@@ -125,7 +125,7 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - 256,000 IOPS 이상 기대가능 
 - 물론 백업은 데브옵스에게 달려 있음
 
-27. EBS Volume Type
+28) EBS Volume Type
 - gp2,3 : ssd / gp2 >> max 16,000 IOPS
 - io1,2 : 성능 더좋은 ssd, great for **databases workloads** / 
   - io1 >> max 64,000 IOPS
@@ -140,13 +140,13 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
   - 그럴 경우 cluster aware한 file system을 써야 함(XFS, EX4는 안됨)
 - st1, sc1 : hdd, cannot be a boot volume
 
-28. EBS Encryption
+29) EBS Encryption
 - EBS Encryption을 enable하면 모든 부분에서 암호화가 적용됨 모든 데이터, 볼륨, 스냅샷, 데이터 전송 시에도 암호화가 적용됨
 - volume을 unencrypted로 생성, 또 이 volume에 대한 snapshot을 unencrypted로 생성하면
 - snapshot copy본을 encrypted하게 만들고 이 encrypted된 snapshot으로부터 암호화된 volume을 생성가능
 - 또는 unencrypted snapshot에서 바로 encrypted된 볼륨을 생성 가능
   
-29. EFS(Elastic File System)
+30) EFS(Elastic File System)
 - Managed NFS(network file system) that can be mounted on many EC2
 - highly available, expensive, pay per use **반대로 EBS는 PROVISIONED된 만큼 지불**
 - EFS works with EC2 instance in multi AZ **반대로 EBS는 bound to specific region**
@@ -163,27 +163,27 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
   - 66강 필독
 - EFS-IA(Infrequent Access)에는 기본 옵션으로 30일 동안 접근되지 않은 파일은 IA영역으로 옮겨져 관리됨(Storage Tier) to save some costs
 
-30. AMI
+31) AMI
 - AMIs are built for a specific AWS Region, they're unique for each AWS Region. 
 - You can't launch an EC2 instance using an AMI in another AWS Region, 
 - but you can copy the AMI to the target AWS Region and then use it to create your EC2 instances.
 - 그러니까 us-east-1로 만든 AMI를 다른 지역에서 사용 불가능하니까 다른 지역에서도 사용가능하도록 AMI를 copy한 후 써야 한다는 뜻
 
-31. Scalability & High Availability
+32) Scalability & High Availability
 - Horizontal Scaling : Auto Scaling Group, Load Balancer
 - High Availability : Auto Scaling Group Multi AZ, Load Balancer Multi AZ
 
-32. Application Load Balancer(v2)
+33) Application Load Balancer(v2)
 - 클라이언트의 요청은 로드 밸런서를 통해 들어오므로 인스턴스가 원본 ip from을 모르므로 X-Forwarded-For(client ip), X-Forwarded-Port, X-Forwarded-Proto를 적어주어야 요청한 ip를 알 수 있다.
 - ALB는 multiple한 target group을 가질 수 있지만 **하나의 포트에는 하나의 target group만 할당할 수 있다.**
 
-33. Target Group
+34) Target Group
 - Instance
 - Ip address(**Must be private IPs**)
 - Lambda functions
 - Load balancer
 
-34. Network Load Balancer
+35) Network Load Balancer
 - NLB has one static IP per AZ, and supports assigning Elastic IP
 - Performance is better than ALB
 - 로드 밸런서 생성 시 AZ에 IP할당할 때, ALB는 assigned by AWS이지만
@@ -193,14 +193,14 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - 즉 NLB는 TCP,TLS,UDP를 이용해 바로 대상 그룹에 전달하는 역할을 하는 것이다.  
 - 겉에서 보기에는 로드 밸런서를 통해서 오는 것처럼 보이지 않고, 외부 클라이언트의 요청에서 오는 것처럼 보인다.
 
-35. Gateway Load Balancer
+36) Gateway Load Balancer
 - in **IP protocol (layer 3 Network layer)**
 - it is **transparent network gateway** becauase it has single entry and single exit
 - 요청이 보안그룹같은 조건에 부합하지 않으면 drop
 - 78강 다이어그램 참고
 - it uses GENEVE protocol on port 6081
 
-36. Cross-Zone Load Balancing
+37) Cross-Zone Load Balancing
 - Classic Load Balancer
   - disabled by default
   - no charges for inter AZ
@@ -211,16 +211,16 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
   - disabled by default
   - pay charges for inter AZ
 
-37. SNI(Server Name Indication)
+38) SNI(Server Name Indication)
 - CLB 미지원
 - SNI로 인해 ALB,NLB는 multiple한 ssl인증서를 로드밸런서에 장착해 다른 도메인의 대상그룹으로 보낼 수 있다.
 
-38. Connection Draining
+39) Connection Draining
 - CLB : Connection Draining
 - ALB & NLB : Deregistration Delay
 - 이걸 설정하면 새 요청은 거절하고 기존 요청은 안전하게 처리한 후 인스턴스를 종료할 수 있음
 
-39. Auto Scaling Group
+40) Auto Scaling Group
 - work with Load Balancer
 - Automatic Scaling
   - dynamic scaling policy
@@ -255,7 +255,7 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
     - Recommended by AWS going forward
 - 참고로 RequestCountPerTarget은 CPUUtilization과 달리 생성 기본 옵션에 없기 때문에 이걸 Scaling의 지표로 사용하려면 CloudWatch를 사용해서 custom metric을 만든 후 CloudWatch알람을 사용해야 한다.
 
-40. RDS
+41) RDS
 - can't ssh to an instance
 - **RDS Backups**
   - 자동 백업 존재
@@ -287,22 +287,22 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
   - Just click on “modify” for the database
 - Multi AZ와 Read Replica의 큰 차이점은 sync와 async라는 특징
 
-41. RDS Security
+42) RDS Security
 - 마스터가 암호화되어 있지 않으면, 레플리카는 암호화할 수 없다.
 - rds에서의 enforcec ssl
   - postgre : parameter group 사용
   - mysql : sql command 사용(grant user ... require ssl)
 - 91강 summary 읽어보기
 
-42. Aurora
+43) Aurora
 - aurora 구조 92강
 - aurora hands on 93강 : replica사용 안해도 storage는 replica는 3개의 az에 저장된다. that's guarantee.
 
-43. Aurora Replicas - Auto Scaling
+44) Aurora Replicas - Auto Scaling
 
-44. Section 9 : quiz 6 - 5번, 8번, 11번
+45) Section 9 : quiz 6 - 5번, 8번, 11번
 
-45. Route 53
+46) Route 53
 - Multi Value policy와 Simple policy의 차이점은 Multi Value는 health check가 가능하다는 것
 - 반면 simple policy는 여러 값들을 리턴하고 클라이언트는 그 중 랜덤한 값을 받아서 사용한다.
 - Health Check 3가지
@@ -310,7 +310,7 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
   - Calculated Health Check
   - Cloud Watch Alarm을 모니터링하는 Health Check / Private Endpoint같은 곳은 health check이 불가능하므로 cloudwatch metric을 사용해 연동
 
-46. S3
+47) S3
 - s3 versioning : delete marker가 존재해서 restore가 가능함
 - 135강 s3 CORS 이론 읽어보기
 - Explicit DENY in an IAM Policy will take precedence over an S3 bucket policy.
