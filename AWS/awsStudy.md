@@ -315,3 +315,37 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - 135강 s3 CORS 이론 읽어보기
 - Explicit DENY in an IAM Policy will take precedence over an S3 bucket policy.
 - IAM Policy가 s3 bucket policy에 우선하게 하려면 explicit deny를 iam policy에 적용하면 된다.
+
+#48 S3 Storage Classes : One Zone IA를 제외한 모든 클래스는 3개 이상의 az를 가진다. 
+- S3 Standard
+- S3 Intelligent Tiering : S3 Intelligent-Tiering은 액세스 패턴이 변경될 때 두 액세스 티어(Frequent Access 및 Infrequent Access) 간에 데이터를 이동시켜 비용을 자동으로 절약해 주는 최초의 클라우드 객체 스토리지 클래스로서, 액세스 패턴을 알 수 없거나 액세스 패턴이 변경되는 데이터에 적합
+- S3 Standard IA
+- S3 One Zone IA : 1개의 az를 사용하기 때문에 다른 클래스에 비해서 낮은 availability를 가짐
+- S3 Glacier : 빠르면 분단위에도 retrieve할 수 있지만, standard는 3 to 5 hours
+- S3 Glacier Deep Archive : bulk옵션 선택 시 retrieve에 최대 48시간 걸림, standard는 12 hours
+
+#49 S3 Lifecycle Rules
+- S3 시나리오를 주고 라이프 사이클을 어떻게 구성할 것인지 물어보는 문제 자주 출제 p.311
+
+#50 S3 Analytics
+- S3 분석을 제공해서 이 옵션을 활성화하면 분석에 근거해서 라이프 사이클을 며칠을 기준으로 해야할 지 결정할 수 있다.
+- Standard to Standard_IA로만 가능하다.
+- Onezone_IA, Glacier는 제공하지 않는다.
+
+#51 S3 Select & Glacier Select
+- Retrieve less data using SQL by performing server side filtering
+- 간단한 파일 타입 정도 ex).csv를 쿼리 가능하면 복잡한 쿼리는 s3 serverless인 athena에서 다룬다.
+
+#52 S3 Baseline Performance
+- Your application can achieve at least 3,500 PUT/COPY/POST/DELETE and 5,500 GET/HEAD requests per second per prefix in a bucket. 
+- 즉 4개의 prefix를 사용한다면 22,000 requests per second for GET and HEAD의 성능을 가진다고 볼 수 있다.
+- Example (object path => prefix):
+  - bucket/folder1/sub1/file => /folder1/sub1/
+  - bucket/folder1/sub2/file => /folder1/sub2/
+  - bucket/1/file => /1/
+  - bucket/2/file => /2/
+
+#52 S3 Event Notifications
+- 예시로 동영상을 s3에 업로드하면 sns, sqs, lambda에 알림을 주는 용도로 사용할 수 있다.
+- 이벤트 발생 시점은 오브젝트 업로드나, 삭제, 복제 등으로 설정가능하다.
+- 언제 notification이 발생하는 지, rule을 커스텀할 수 있다.
