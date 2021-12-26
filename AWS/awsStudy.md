@@ -332,20 +332,58 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - Standard to Standard_IA로만 가능하다.
 - Onezone_IA, Glacier는 제공하지 않는다.
 
-#51 S3 Select & Glacier Select
-- Retrieve less data using SQL by performing server side filtering
-- 간단한 파일 타입 정도 ex).csv를 쿼리 가능하면 복잡한 쿼리는 s3 serverless인 athena에서 다룬다.
-
-#52 S3 Baseline Performance
+#51 S3 Baseline Performance
 - Your application can achieve at least 3,500 PUT/COPY/POST/DELETE and 5,500 GET/HEAD requests per second per prefix in a bucket. 
 - 즉 4개의 prefix를 사용한다면 22,000 requests per second for GET and HEAD의 성능을 가진다고 볼 수 있다.
-- Example (object path => prefix):
+- 예시 : object path == prefix:
   - bucket/folder1/sub1/file => /folder1/sub1/
   - bucket/folder1/sub2/file => /folder1/sub2/
   - bucket/1/file => /1/
   - bucket/2/file => /2/
+- 위에서 볼 수 있듯이 위 4개는 전부 다른 prefix이다.
 
-#52 S3 Event Notifications
+#52 S3 Performance
+- p.315, p.317 그림 참고
+- Multi-Part upload
+  - **recommended for files > 100MB**
+  - **must use for files > 5GB**
+  - **Can help parallelize uploads** (speed up transfers) : 파일을 여러 부분을 잘라 나눈 후 동시에 보낸다.
+-  S3 Transfer Acceleration
+  - Increase transfer speed by transferring file to an AWS edge location which will forward the data to the S3 bucket in the target region  
+  - 가까운 region의 edge location에 보내고 aws가 알아서 private경로를 통해서 목표 region의 bucket에 보낸다는 것이다.
+  - 따라서 업로드 속도 향상을 기대할 수 있다.
+  - **Compatible with multi-part upload**
+  - edge location은 cloudfront에서 다시 다룰 듯하다.
+- S3 Performance – S3 Byte-Range Fetches
+  - Parallelize GETs by requesting specific byte ranges
+  - Better resilience in case of failures
+  - 파일을 바이트 기준으로 부분으로 나누어 보내거나, 파일에서 첫 몇 바이트만 가져올 수 있다.
+
+#53 S3 Select & Glacier Select
+- Retrieve less data using SQL by performing server side filtering
+- 간단한 파일 타입 정도 ex).csv를 쿼리 가능하면 복잡한 쿼리는 s3 serverless인 athena에서 다룬다.
+
+#54 S3 Event Notifications
 - 예시로 동영상을 s3에 업로드하면 sns, sqs, lambda에 알림을 주는 용도로 사용할 수 있다.
 - 이벤트 발생 시점은 오브젝트 업로드나, 삭제, 복제 등으로 설정가능하다.
 - 언제 notification이 발생하는 지, rule을 커스텀할 수 있다.
+
+#55 S3 Request Pays
+- s3에 파일을 요청하는 사람이 네트워크 비용을 지불하게 할 수 있다.
+- aws에 인증된 사람만 가능(must not be anonymous)
+
+#56 Amazon Athena
+- **Serverless query service to perform analytics** against S3 objects
+- 유형 문제 : analyze data in S3 using serverless SQL, use Athena
+- 서버리스이기 때문에 db를 직접 만들고 관리할 필요 없이, rdb를 GUI로 만들 수 있고 sql을 사용가능하다.
+- 여러 정보가 저장되기 때문에 s3 접근 시간, http status등 다양한 액세스 정보를 저장하고 조회할 수 있다.
+
+#57 S3 Object Lock
+- WORM (Write Once Read Many) model 구현
+- **versioning이 활성화된 상태에서만 동작**
+- Object retention(보유 기간)
+  - Retention Period: specifies a fixed period
+  - Legal Hold: same protection, no expiry date
+- Mode:
+  - Governance mode: 루트 계정은 모드 변경 가능, 파일 변경 가능
+  - Compliance mode: 한 번 설정하면 루트 계정이라고 모드 변경 불가, 파일 변경 불가
