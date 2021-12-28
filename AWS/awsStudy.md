@@ -387,3 +387,19 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - Mode:
   - Governance mode: 루트 계정은 모드 변경 가능, 파일 변경 가능
   - Compliance mode: 한 번 설정하면 루트 계정이라고 모드 변경 불가, 파일 변경 불가
+
+#58 CloudFront vs S3 Cross Region Replication
+- CloudFront를 사용해야 할 곳
+  - Great for **static content** that must be available everywhere
+- Cross Region Replication을 사용해야 할 곳
+  - great for **dynamic content** that needs to be available at low-latency in few regions
+  - 단점으로는 CloudFront와 달리 region마다 일일이 세팅해줘야 함
+
+#59 CloudFront Signed URL / Signed Cookies
+- 단일 자원에 액세스하기 위한 특정 회원만을 위한 URL
+- Multiple 자원에 액세스하는 특정 회원만을 위한 URL(one signed cookie for many files)
+
+#60 CloudFront – Origin Groups
+- high availability를 위해 origin을 여러 개 둘 수 있음
+
+#61 CloudFront – Field Level Encryption
