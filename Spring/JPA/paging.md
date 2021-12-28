@@ -67,7 +67,7 @@ public Page<MemberDto> list(Pageable pageable) {
 ```text
 // Kotlin
 @GetMapping("/members")
-public Page<MemberDto> list(Pageable pageable) {
+fun list(pageable: Pageable): Page<MemberDto>{
  return memberRepository.findAll(pageable).map(MemberDto(it));
 }
 ```
