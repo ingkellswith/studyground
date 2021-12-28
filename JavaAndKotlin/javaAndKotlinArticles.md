@@ -11,3 +11,7 @@ Java And Kotlin Articles
 
 - 자바의 직렬화  
 [1. 자바 직렬화, 그것이 알고싶다. 훑어보기편](https://techblog.woowahan.com/2550/)  
+[2. 직렬화(Serialization)란 무엇일까?](https://devlog-wjdrbs96.tistory.com/268)  
+
+- 컬렉션
+[1. LinkedList의 원리에 대해](https://bepoz-study-diary.tistory.com/234?category=833599)
