@@ -13,5 +13,9 @@ Java And Kotlin Articles
 [1. 자바 직렬화, 그것이 알고싶다. 훑어보기편](https://techblog.woowahan.com/2550/)  
 [2. 직렬화(Serialization)란 무엇일까?](https://devlog-wjdrbs96.tistory.com/268)  
 
-- 컬렉션
-[1. LinkedList의 원리에 대해](https://bepoz-study-diary.tistory.com/234?category=833599)
+- 컬렉션  
+[1. LinkedList의 원리에 대해](https://bepoz-study-diary.tistory.com/234?category=833599)  
+
+- 코틀린의 제네릭  
+[1. Set vs MutableSet, List vs MutableList에 대하여](https://stackoverflow.com/questions/44213074/kotlin-collection-has-neither-generic-type-or-onetomany-targetentity?answertab=active#tab-top)  
+[2. 코틀린 제네릭, in? out? ](https://medium.com/mj-studio/%EC%BD%94%ED%8B%80%EB%A6%B0-%EC%A0%9C%EB%84%A4%EB%A6%AD-in-out-3b809869610e)  
