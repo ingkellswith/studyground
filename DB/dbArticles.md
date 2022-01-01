@@ -11,3 +11,6 @@ DB Articles
 
 - 트랜잭션 격리 수준  
 [1. 트랜잭션 격리 수준(Transaction Isolation Level)](https://dar0m.tistory.com/225)  
+ 
+- 분산 트랜잭션  
+[1. 분산 트랜잭션(Distributed transaction)](https://junhyunny.github.io/msa/design-pattern/distributed-transaction/)  
