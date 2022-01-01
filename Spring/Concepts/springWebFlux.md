@@ -4,7 +4,8 @@ Spring WebFlux
 [Spring WebClient 쉽게 이해하기](https://happycloud-lee.tistory.com/220?category=902419)   
 [Spring WebFlux는 어떻게 적은 리소스로 많은 트래픽을 감당할까?](https://alwayspr.tistory.com/44)   
 [동기와 비동기](https://musma.github.io/2019/04/17/blocking-and-synchronous.html)  
-[PM2를 활용한 Node.js 무중단 서비스하기](https://engineering.linecorp.com/ko/blog/pm2-nodejs/)
+[PM2를 활용한 Node.js 무중단 서비스하기](https://engineering.linecorp.com/ko/blog/pm2-nodejs/)  
+[코틀린(kotlin) + 스프링부트(springboot) + 웹플럭스(webflux) + 코루틴(coroutine) - 웹플럭스에서 코루틴 사용해보기](https://appleg1226.tistory.com/16)  
 
 # Spring WebFlux
 **Spring MVC**가 멀티 스레드 + blocking + 동기 방식이라면,  
