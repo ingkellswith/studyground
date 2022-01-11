@@ -403,3 +403,24 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - high availability를 위해 origin을 여러 개 둘 수 있음
 
 #61 CloudFront – Field Level Encryption
+
+#62 Unicast IP vs Anycast IP
+- AWS Global Accelerator는 Anycast IP를 사용해서 같은 ip중 geo location이 더 가까운 쪽으로 라우팅되는 방식을 채택
+
+#63 CloudFront vs Global Accelerator
+- CloudFront uses Edge Locations to cache content while Global Accelerator uses Edge Locations to find an optimal pathway to the nearest regional endpoint. 
+- CloudFront is designed to handle HTTP protocol meanwhile Global Accelerator is best used for both HTTP and non-HTTP protocols such as TCP and UDP.
+
+#64 AWS Snow Family
+- 몇십 테라바이트부터 시작하는 데이터들을 빠르게 옮기고 싶을 때 사용하는 것으로 물리적 장치를 사용해 속도를 높인다.
+- 즉, 네트워크를 통해 s3같은 저장소에 옮기는 것이 아니라 직접 aws에 하드웨어적으로 갈아끼우는 것이라고 생각하면 편하다.
+- 보통 데이터 마이그레이션에 일주일 이상이 걸릴 때 사용하면 좋다.
+- Snowcone - 수십 테라바이트 마이그레이션에 사용
+- Snowball Edge - 수십 페타바이트 마이그레이션에 사용
+- Snowmobile - 수십 엑사바이트 마이그레이션에 사용
+
+#64 Snow Family Edge Computing
+- 오지에서 클라우드 컴퓨팅을 사용하기 위해서 snow family를 사용할 수 있고, snowcone같은 물리적 장치에 접근할 때 OpsHub를 사용한다.
+
+#64 Snowball into Glacier
+- snowball에서 바로 glacier로 옮길 수 없고, s3로 옮긴 후 s3 lifecycle을 이용해서 glacier로 옮기는 것이 제일 좋은 방법이다.
