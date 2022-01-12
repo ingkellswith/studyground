@@ -424,3 +424,15 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 
 #64 Snowball into Glacier
 - snowball에서 바로 glacier로 옮길 수 없고, s3로 옮긴 후 s3 lifecycle을 이용해서 glacier로 옮기는 것이 제일 좋은 방법이다.
+
+#65 SQS - Standard Queue
+- FIFO가 아닌 Standard버전의 특성
+- At least once delivery
+- Consumers receive and process messages in parallel
+- Consumers delete messages after processing them
+- We can scale consumers horizontally to improve throughput of processing
+
+#66 SQS - Message Visibility Timeout
+- 387p. consumer그룹 내에서 한 consumer가 메시지를 consume하면 다른 consumer는 visibility timeout기간 동안 메시지를 볼 수 없다.
+- 즉 한 consumer가 소비하는 동안 visibility timeout기간(사용자 설정가능)동안 다른 consumer의 접근을 막는 것이다.
+- visibility timeout기간 이후 message가 delete되지 않았을 때 다시 메시지를 consume할 consumer결정 방식은 polling중인 consumer중 랜덤으로 결정되는 것 같다.
