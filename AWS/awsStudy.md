@@ -436,3 +436,17 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - 387p. consumer그룹 내에서 한 consumer가 메시지를 consume하면 다른 consumer는 visibility timeout기간 동안 메시지를 볼 수 없다.
 - 즉 한 consumer가 소비하는 동안 visibility timeout기간(사용자 설정가능)동안 다른 consumer의 접근을 막는 것이다.
 - visibility timeout기간 이후 message가 delete되지 않았을 때 다시 메시지를 consume할 consumer결정 방식은 polling중인 consumer중 랜덤으로 결정되는 것 같다.
+
+#67 SQS - Dead Letter Queue
+- sqs를 두 개 만들고 하나는 dead letter queue전용 큐로 만들 수 있다.
+- 여기서 dead letter이라 함은, 한 message에 대해서 threshold(사용자 설정 가능)만큼 consumer가 receive했음에도 불구하고, message가 정상적으로 process되지 않은 것을 말하고 여기에서의 message가 dead letter이다.
+
+#68 SQS - Long Polling
+- Long Polling **decreases the number of API calls** made to SQS while **increasing the efficiency and latency** of your application.
+- Long Polling은 메시지가 수신될 때까지 길게 기다리겠다는 의미(보통 20초로 설정)이다. 
+- 메시지가 없다면 몇 번이고 계속 요청하는 상황이 발생할 수 있는데 Long Polling으로 이를 방지할 수 있다.
+- Increasing the efficiency and latency : 오래 기다릴 수 있기 때문에 당연하게도 효율성이나 지연시간이 늘어날 수 있다.
+
+#69 SQS - Request-Response Systems
+- 391p. Request-Response Systems을 구현하는 클라이언트가 존재한다.
+- SQS Temporary Queue Client라는 클라이언트(자바로 구현)를 사용하면 Request-Response Systems를 구현할 수 있고 내부적으로 이 시스템을 구현하는 가상의 큐들이 만들어진다.  
