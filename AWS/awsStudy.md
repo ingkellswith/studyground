@@ -427,10 +427,14 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 
 #65 SQS - Standard Queue
 - FIFO가 아닌 Standard버전의 특성
-- At least once delivery
-- Consumers receive and process messages in parallel
+- At least once delivery : 한 번만 receive하는 것을 보장한다.
+- Consumers receive and process messages in parallel : 병렬의 consumer가 존재할 때 한 메시지는 한 consumer에게만 전달된다.(한 번만 받는 것 보장)
 - Consumers delete messages after processing them
 - We can scale consumers horizontally to improve throughput of processing
+- FIFO Queue와 달리 throughput에 제한이 없다.
+- 낮은 지연시간(publish, receivee0하는데에 10ms밖에 걸리지 않는다.)
+- 각 메시지는 256KB로 제한
+- 메시지는 기본 4일에서 최대 14일까지 보관가능
 
 #66 SQS - Message Visibility Timeout
 - 387p. consumer그룹 내에서 한 consumer가 메시지를 consume하면 다른 consumer는 visibility timeout기간 동안 메시지를 볼 수 없다.
@@ -450,3 +454,14 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 #69 SQS - Request-Response Systems
 - 391p. Request-Response Systems을 구현하는 클라이언트가 존재한다.
 - SQS Temporary Queue Client라는 클라이언트(자바로 구현)를 사용하면 Request-Response Systems를 구현할 수 있고 내부적으로 이 시스템을 구현하는 가상의 큐들이 만들어진다.  
+
+#70 SQS - FIFO Queue
+- Standard Queue가 한 번만 받는 것을 보장하는 것과 달리, FIFO Queue는 한 번만 보내는 것을 보장한다.(by removing duplicates)
+- throughput이 300msg per second(batching을 사용하면 3000msg per second)로 standard에 비해 적다.
+
+#71 SNS - Simple Notification Service
+- SQS와 달리 pub/sub모델을 사용해서 topic을 발행하면 여러 구독자가 읽는 방식이다.
+- 최대 100,000개의 토픽과 10,000,000개의 구독자를 감당할 수 있다.
+- 구독자는 SQS, HTTP/HTTPS를 사용한 애플리케이션, Lambda 등이 될 수 있다.
+- AWS Service중에서도 SNS로 데이터를 보낼 수 있는 서비스들이 다수 존재한다.
+  - CloudWatch for alarm, Auto Scaling Group Notifications, S3 Bucket Events 등
