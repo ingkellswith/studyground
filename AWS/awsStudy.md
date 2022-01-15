@@ -456,12 +456,78 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - SQS Temporary Queue Client라는 클라이언트(자바로 구현)를 사용하면 Request-Response Systems를 구현할 수 있고 내부적으로 이 시스템을 구현하는 가상의 큐들이 만들어진다.  
 
 #70 SQS - FIFO Queue
-- Standard Queue가 한 번만 받는 것을 보장하는 것과 달리, FIFO Queue는 한 번만 보내는 것을 보장한다.(by removing duplicates)
+- Standard Queue가 최소 한 번 이상의 delivery를 보장하는 것과 달리, FIFO Queue는 정확히 한 번의 delivery를 보장한다.(by removing duplicates)
 - throughput이 300msg per second(batching을 사용하면 3000msg per second)로 standard에 비해 적다.
 
 #71 SNS - Simple Notification Service
-- SQS와 달리 pub/sub모델을 사용해서 topic을 발행하면 여러 구독자가 읽는 방식이다.
+- SQS와 달리 pub/sub모델을 사용해서 topic을 발행하면 여러 구독자가 읽는 방식이다. topic은 SNS가 발행하는 메시지라고 보면 된다.
 - 최대 100,000개의 토픽과 10,000,000개의 구독자를 감당할 수 있다.
 - 구독자는 SQS, HTTP/HTTPS를 사용한 애플리케이션, Lambda 등이 될 수 있다.
 - AWS Service중에서도 SNS로 데이터를 보낼 수 있는 서비스들이 다수 존재한다.
   - CloudWatch for alarm, Auto Scaling Group Notifications, S3 Bucket Events 등
+- Message Filtering이 가능해서 구독자별로 받고 싶은 메시지를 선별해서 받을 수 있다.(ex. 특정 문자가 들어간 메시지만 받고 싶은 경우)
+
+#72 SNS + SQS: Fan Out
+- Push once in SNS, receive in all SQS queues that are subscribers : SNS에 메시지를 푸시하면 SQS 구독자들이 메시지를 받는 형태이다.
+- 기존 SQS만 사용할 때는 하나의 메시지를 하나의 consumer(SQS)가 가져갔지만, sns를 사용함으로써 하나의 메시지를 여러 구독자들이 소비하는 형태가 가능해졌다.
+- 마찬가지로 S3 Event(ex. object creation)를 여러 SQS에 보내고 싶다면 fan out 패턴을 사용해, SNS에서 메시지를 받고 SNS에서 여러 구독자에게 보낼 수 있다.
+
+#73 SNS – FIFO Topic
+- SNS역시 SQS와 마찬가지로 Standard형태와 FIFO형태가 있고, 거의 비슷한 특징을 지닌다.
+- 다만 FIFO형태의 SNS는 FIFO형태의 SQS만 구독자로 가질 수 있다. 왜냐하면 FIFO Queue방식으로 전달되는 메시지를 FIFO로 처리하려면 FIFO형태의 SQS가 사용될 수 밖에 없기 때문이다. 
+
+#74 Kinesis
+- Makes it easy to collect, process, and analyze streaming data in real-time : 데이터 수집, 처리, 분석을 실시간으로 가능하게 해주는 서비스
+
+#75 Kinesis Data Streams
+- capture, process, and store data streams : 데이터 캡쳐, 처리, 저장을 지원하는 서비스
+- Kinesis Data Streams에는 Record를 받는 shard가 존재하고, shard들을 모아놓은 Stream이 있다.
+- Producer가 만드는 Record는 1. Partition key, 2. Data Blob으로 구성된다.(Kinesis Data Streams에 전달)
+- Kinesis Data Streams가 만드는 Record는 1. Partition key, 2. Data Blob 3. Sequence no으로 구성된다.(Consumers에게 전달)
+- Partition key가 존재하는 이유 참고 : [Kafka 사용시 주의점](https://allover3773.gitbook.io/study/kafka/kafkapoint)
+- throughput은 1MB/sec 또는 1000msg/sec이 가능하고, 이 throughput은 per shard이기 때문에 30개의 shard는 30MB/sec의 throughput을 가진다.
+- Retention between 1 day (default) to 365 days : 데이터가 Kinesis Data Streams에 최소 1일 이상 쌓이기 때문에 쌓인 데이터를 대상으로 replay data가 가능하다.
+- Data that shares the same partition goes to the same shard (ordering) : Partition key를 이용해 순서보장이 필요한 데이터는 순서보장 지원
+- Once data is inserted in Kinesis, it can’t be deleted (immutability) : 데이터가 한 번 쌓이면 retention기간 동안 지울 수 없다.
+- Real-time : ~200ms의 실시간 처리가 가능하다.
+- **Destination**
+  - 1. SDK를 사용한 애플리케이션(real time처리가 가능하기 때문)
+  - 2. Lambda
+  - 3. Kinesis Data Firehose
+  - 4. Kinesis Data Analytics
+- **Shard를 사용자가 직접 확장하거나 축소해야 하기 때문에 fully managed service는 아니다**.
+
+#76 Kinesis Data Firehose
+- Fully Managed Service, no administration, automatic scaling, serverless : Kinesis Data Streams와 달리 fully managed service이다.
+- 배치 처리를 하기 때문에 처리에 시간이 걸린다. 따라서 Near Real Time이라고 부른다.
+  - 60 seconds latency minimum for non full batches
+  - Or minimum 32 MB of data at a time
+- Kinesis Data Streams와 달리 데이터를 가공한 후 batch 처리해서 consumers에게 전달한다.(이 가공 과정과, batch처리 기간이 있기 때문에 real time으로 사용이 불가능하다.)
+- **Destination**
+  - 1. datadog같은 모니터링 3rd-party destination 
+  - 2. S3, Redshift(페타바이트 이상의 대규모 데이터 저장소 및 분석 서비스), ElasticSearch와 같은 aws destination
+  - 3. http endpoint
+- 데이터를 저장하지 않으므로 Kinesis Data Streams와 달리 data replay가 불가능하다.
+
+#77 Kinesis Data Analytics
+- Kinesis Data Streams또는 Kinesis Data Firehose로부터 전달받은 데이터를 바탕으로 SQL을 실행할 수 있는 서비스
+- Fully Managed Service이다.
+- Real-time이기 때문에 실시간 데이터 분석이 가능하다.
+- Kinesis Data Streams또는 Kinesis Data Firehose를 source로 하고 이 데이터를 대상으로 SQL을 실행하고 다시 Kinesis Data Streams또는 Kinesis Data Firehose에 전달하는 구조이다.
+- 크게 두 가지 구조를 사용한다.
+  - SQL실행 후 다시 Kinesis Data Streams에 전달해 Kinesis Data Streams가 APP이나 Lambda로 전달하는 방식
+  - SQL실행 후 다시 Kinesis Data Firehose에 전달해 Kinesis Data Firehose가 S3나 Redshift같은 저장소로 전달해 저장하는 방식
+  
+#78 Ordering data into Kinesis
+- Partition key를 kinesis에 보내면 hash해서 알맞은 shard로 배치한다.
+- The same key will always go to the same shard : 예를 들어 1번 partition key가 1번 샤드에 배치되고, 2번 partition key가 2번 샤드에 배치되었다면, 그 이후에도 1번 partition key는 1번 샤드에 배치되고, 2번 partition key는 2번 샤드에 배치되는 시스템이다.
+
+#79 Ordering data into SQS
+- kinesis와 정렬 매커니즘이 다르다.
+- For SQS FIFO, if you don’t use a Group ID, messages are consumed in the order they are sent, with only one consumer : sqs는 consumer가 메시지를 consume한 후 그 메시지를 지우는 것이 일반적이고, 한 consumer에 의해서 이 작업이 이루어진다. group id가 없다면 메시지는 보낸 순서대로 읽혀질 것이다.
+- 413p 참고
+
+#80 Amazon MQ
+- Amazon MQ = managed Apache ActiveMQ
+- on-premise mq가 MQTT, AMQP같은 기존에 존재하던 프로토콜을 사용하고 있는데 클라우드로 이전하고 싶다면 AMAZON MQ를 사용하면 된다.(SNS, SQS로의 이전이 아니라는 점 주의)
+- High Availability를 지원한다.
