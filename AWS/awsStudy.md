@@ -527,7 +527,53 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - For SQS FIFO, if you don’t use a Group ID, messages are consumed in the order they are sent, with only one consumer : sqs는 consumer가 메시지를 consume한 후 그 메시지를 지우는 것이 일반적이고, 한 consumer에 의해서 이 작업이 이루어진다. group id가 없다면 메시지는 보낸 순서대로 읽혀질 것이다.
 - 413p 참고
 
-#80 Amazon MQ
+#80 SQS VS SNS VS KINESIS
+- SQS
+  - Data is deleted after being consumed
+  - No need to provision throughput
+- SNS
+  - Data is not persisted (lost if not delivered) : 데이터는 어떤 이유로 전달되지 못했을 경우 저장되지 않기 때문에 데이터가 사라질 수 있다.
+  - No need to provision throughput
+  - Integrates with SQS for fan- out architecture pattern : 한 메시지를 여러 consumer가 소비하는 것이 가능함.
+- KINESIS
+  - **Throughput**
+    - Standard: pull data - 2 MB per shard
+    - Enhanced-fan out: push data - 2 MB per shard per consumer
+  - Possibility to replay data : Kinesis Data Streams의 경우 데이터가 저장되므로 저장된 데이터를 대상으로 작업 가능
+
+#81 Amazon MQ
 - Amazon MQ = managed Apache ActiveMQ
 - on-premise mq가 MQTT, AMQP같은 기존에 존재하던 프로토콜을 사용하고 있는데 클라우드로 이전하고 싶다면 AMAZON MQ를 사용하면 된다.(SNS, SQS로의 이전이 아니라는 점 주의)
 - High Availability를 지원한다.
+
+#82 Docker
+- Docker is a software development platform to deploy apps : 소프트웨어 배포를 위한 플랫폼, 애플리케이션을 컨테이너 안에 담을 수 있게 해주는 플랫폼
+
+#83 Docker vs Virtual Machines
+- Docker is ”sort of” a virtualization technology, but not exactly : 도커는 일종의 가상화 기술이지만, 가상화 그 자체는 아니다.
+- 421p. Resources are shared with the host => many containers on one server : 한 서버에 여러 컨테이너가 올라가 있다면, 저장소나 네트워크를 도커 컨테이너 간에, 혹은 호스트와 공유할 수 있다.
+- 반면 개별 Virtual Machine(Guest OS)은 호스트 OS와 자원을 공유하지 않는다.
+
+#84 ECS
+- 2개의 launch type
+  - 1. ec2 launch type : 직접 ec2를 확장하거나 축소시킨다.
+  - 2. fargate : ec2 관여 필요 없이 serverless로 동작한다.
+- **EC2 launch type** : ECS Cluster 내부에 여러 개의 Container Instance가 있고, 개별 Container Instance 내부에는 ECS Agent가 있고, 이 ECS Agent가 Container Instance 내부의 task들을 외부에 노출시키는 역할을 한다. a task는 한 개의 실행 중인 도커 컨테이너라고 생각하면 편하다.
+- **Fargate** : ECS Cluster 내부에서, 한 개의 task에 한 개의 ENI가 붙는다. 따라서 많은 task가 존재한다면 그 만큼의 ip를 감당해야 하므로 네트워크가 충분히 커야 한다.
+- **EC2 Instance Profile** : ECS agent가 가지는 권한이다. 427p 참고
+- **ECS Task Role** : 개별 태스크가 가지는 권한(role)이다. 이 role에 해당하는 권한만 가지고 다른 aws 서비스에 접근한다.
+- ECS에서 CloudWatch에 의한 Scaling작업을 할 때, 두 단계의 Scaling이 이루어진다.
+  - 1. task의 개수를 늘려 서비스 컨테이너의 수를 늘리는 작업 : 컨테이너가 인스턴스의 capacity를 초과해서 생성될 수는 없다.
+  - 2. Scale ECS Capacity Providers : 따라서 인스턴스를 수평적으로 늘리는 작업을 ECS Capacity Providers가 도와준다.
+  - 이 작업이 가능하려면 fargate를 사용하지 않는 ec2 launch type이어야 하고, 당연하게도 auto scaling group을 사용해야 한다.
+- **ECS Rolling Update** 
+  - 컨테이너 업데이트를 실행하기 위해 사용할 수 있는 하나의 방법으로, 태스크를 업데이트하는 방법이라고 생각하면 편하다.
+  - 컨테이너 업데이트를 위해서는 컨테이너가 remove되고, 새로운 컨테이너로 실행되어야 한다.
+  - 초기 태스크 수 기준으로, 퍼센트 단위로 태스크의 실행 개수를 정할 수 있다.
+
+#85 EKS
+- ECS와 마찬가지로 아래의 launch type을 지원한다.
+  - 1. ec2 launch type : 직접 ec2를 확장하거나 축소시킨다.
+  - 2. fargate : ec2 관여 필요 없이 serverless로 동작한다.
+- 자세한 구조 441p 참고
+- ECS에서는 **task**라고 부르던 컨테이너가, EKS에서는 **pod**라고 불리고, 한 개의 EC2 Instance를 **EKS node**라고 부른다.
