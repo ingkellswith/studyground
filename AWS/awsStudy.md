@@ -577,3 +577,23 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
   - 2. fargate : ec2 관여 필요 없이 serverless로 동작한다.
 - 자세한 구조 441p 참고
 - ECS에서는 **task**라고 부르던 컨테이너가, EKS에서는 **pod**라고 불리고, 한 개의 EC2 Instance를 **EKS node**라고 부른다.
+
+#86 Lambda
+- Virtual functions – no servers to manage! : 요청 횟수 또는 GB-seconds로 요금이 계산되기 때문에 요청 횟수를 예상할 수 없거나, 요청 횟수가 적을 때 효과적이다.
+
+#87 Lambda@Edge
+- Lambda를 CloudFront처럼 쓸 수 있게 해주는 서비스
+
+#88 DynamoDB
+- Fully managed, highly available with replication across multiple AZs : 서버 리스 NoSQL 데이터베이스 with multi AZ
+- **Provisioned Mode(default)**
+  - Pay for provisioned Read Capacity Units (RCU) & Write Capacity Units (WCU) : 미리 capacity를 정해서 예상된 트래픽에 대응한다.
+- **On-Demand Mode**
+  - Read/writes automatically scale up/down with your workloads : 트래픽을 예상할 수 없을 때 자동으로 scale해주는 모드, 당연히 default보다 더 비싸다.
+
+#89 DynamoDB Accelerator (DAX)
+- Fully-managed, highly available, seamless in memory cache for DynamoDB : DynamoDB전용 캐시
+- **DynamoDB Accelerator(DAX) vs ElastiCache**
+  - DynamoDB에 **DynamoDB Accelerator(DAX)**를 사용하면 DynamoDB의 개별 object, 쿼리 결과를 캐시할 수 있다.
+  - **ElastiCache**도 같이 사용 가능한데, ElastiCache는 Application이 DynamoDB 또는 DynamoDB Accelerator(DAX)으로부터 데이터를 전달받고 이 데이터를 가공한 후 이 데이터를 캐시하고 싶을 때 사용한다. 이를 Store Aggregation Result라고 부른다.
+  - 위 케이스에서 둘의 차이점은 데이터 가공여부라고 볼 수 있다.
