@@ -597,3 +597,71 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
   - DynamoDB에 **DynamoDB Accelerator(DAX)**를 사용하면 DynamoDB의 개별 object, 쿼리 결과를 캐시할 수 있다.
   - **ElastiCache**도 같이 사용 가능한데, ElastiCache는 Application이 DynamoDB 또는 DynamoDB Accelerator(DAX)으로부터 데이터를 전달받고 이 데이터를 가공한 후 이 데이터를 캐시하고 싶을 때 사용한다. 이를 Store Aggregation Result라고 부른다.
   - 위 케이스에서 둘의 차이점은 데이터 가공여부라고 볼 수 있다.
+
+#90 DynamoDB Streams
+- Ordered stream of item-level modifications (create/update/delete) in a table
+- DynamoDB의 object를 create/update/delete할 때 이벤트가 발생해 DynamoDB Streams가 발생하게 할 수 있다.
+- 구조 464p 참고
+
+#91 DynamoDB Features
+- **DynamoDB Global Tables**
+  - active-active replication의 multi region방식을 지원한다.(region은 2개 이상 가능)
+  - Applications can READ and WRITE to the table in any region : 아무데나 READ, WRITE해도 active-active replication이기 때문에 상관 없고, multi region이기 때문에 low latency라는 장점이 있다.
+  - Must enable DynamoDB Streams as a pre-requisite : DynamoDB Streams을 필수적으로 활성화해야 함
+- **Time To Live**
+  - expire time을 지정해서 1.item이 너무 많아지거나 2.세션 관리를 해야할 경우, item을 삭제하는 용도로 사용할 수 있다.
+- **Indexes**
+  - DynamoDB에서 쿼리는 Primary key를 대상으로만 가능한데 인덱스를 설정하면 attributes를 대상으로 쿼리가 가능하다.
+- **Transactions**
+  - A Transaction is written to both tables, or none! : rds로 예를 들면 외래키를 설정했을 때 자식 테이블과 부모 테이블의 데이터를 동기화하기 위해서 부모 테이블의 외래키 update가 cascade되는 경우가 있다. 이를 DynamoDB에서는 transaction이라는 개념으로 동시에 쓰거나 동시에 쓰지 않는 방식으로 구현했다고 보면 된다.(데이터를 참조하는 경우 동일 데이터 보장)
+
+#92 AWS API Gateway
+- **Edge-Optimized(default) mode: For global clients**
+  - Requests are routed through the CloudFront Edge locations (improves latency) : 요청을 받을 때 CloudFront를 사용해 latency를 줄이고, 실제로는 한 region에만 api gateway를 두는 방식이다.
+- **Regional mode**
+  - Edge-Optimized(default)와 비슷하게 CloudFront를 사용하는 점까진 같은데, 지역 한정으로 동작하므로 캐시를 다룰 때 더욱 세부적으로 다룰 수 있다고 한다.
+- **Private mode** 
+  - Can only be accessed from your VPC : private VPC에서 ENI를 사용해서 접근한다.
+
+#93 API Gateway – Security
+- **IAM Permissions**
+  - Sig v4라는 일종의 서명키를 요청 헤더 또는 쿼리 문자열에 추가한다.
+  - 이 서명키를 API Gateway에 보내면 API Gateway가 IAM service에게 IAM policy check을 요청한다. 
+  - 인증과 인가 둘 다 가능
+- **Lambda Authorizer (formerly Custom Authorizers)**
+  - Token을 요청 헤더에 담아 API Gateway에 보내면 API Gateway가 Lambda Authorizer에게 token check을 요청한다.
+  - 토큰이 유효하다면 IAM Permission과 동일하게 IAM policy를 리턴한다.
+  - IAM Permissions의 Sig v4라는 AWS전용 서비스가 아니라 OAuth같은 third party 인증타입을 지원하는 것이 주요 기능이다.
+  - 인증과 인가 둘 다 가능
+- **Cognito User Pools**
+  - Cognito fully manages user lifecycle : serverless 유저 인증 데이터베이스(모바일 특화)
+  - 1. Cognito User Pools에 인증 요청을 하고 토큰을 받는다.
+  - 2. API Gateway에 토큰과 요청을 함께 보낸다.
+  - 3. API Gateway는 Cognito User Pools에 이 토큰이 있는 지 확인한다.
+  - IAM Permissions, Lambda Authorizer와 다른 점은 바로 API Gateway에 요청하는 것이 아니라, 그 이전에 Cognito User Pools으로부터 발급받은 토큰이 필요하기 때문에 Cognito User Pools에 먼저 인증요청을 보내야 한다.
+  - 인증만 가능
+
+#94 AWS Cognito
+- **Cognito User Pools**
+  - Sign in functionality for app users : 모바일 앱을 위한 인증 제공
+  - Sends back a JSON Web Tokens (JWT) : (모바일 App을 위해서) 로그인 시 jwt를 제공해준다.(앱은 쿠키 세션 관리가 힘들다고 알고 있음 - 학습 필요)
+  - Integrate with API Gateway와 함께 동작
+- **Cognito Identity Pools (Federated Identity)**
+  - AWS resources에 직접 접근하기 위한 AWS credentials을 제공한다. 
+  - **identity provider로 Cognito User Pools를 사용**한다.
+  - 1. 클라이언트가 identity provider에 로그인 요청을 보낸다.
+  - 2. identity provider는 응답으로 토큰을 반환한다.
+  - 3. 토큰을 Federated Identity로 보낸다.
+  - 4. Federated Identity는 identity provider에게 토큰을 검증한다.
+  - 5. 토큰이 유효하다면 STS에서 credential를 획득해 temp credential을 client에게 리턴한다.
+  - 6. client는 temp credential을 이용해서 aws service에 직접 접근이 가능하다.
+  - 사용 사례 : 페이스북 로그인으로 s3에 직접 쓰기 권한을 얻고 싶을 때
+- **Cognito Sync == Appsync**
+  - Requires Federated Identity Pool in Cognito (not User Pool) : **Federated Identity Pool이 요구조건**이다.
+  - Store preferences, configuration, state of app : app의 상태, 설정을 저장한다.
+  - Cross device synchronization : 멀티 디바이스 간 싱크 가능
+  - Offline capability : 오프라인 상태여도 온라인되면 싱크 가능
+  - Store data in datasets : dataset에 data를 저장하고 dataset은 최대 20개까지 가능
+
+#95 AWS SAM - Serverless Application Model
+- Framework for developing and deploying serverless application : 이런 프레임워크도 있다는 것만 알아두기
