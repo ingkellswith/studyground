@@ -665,3 +665,23 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 
 #95 AWS SAM - Serverless Application Model
 - Framework for developing and deploying serverless application : 이런 프레임워크도 있다는 것만 알아두기
+
+#96 AWS Database Types
+- RDBMS : RDS, Aurora – 자유로운 join
+- NoSQL : DynamoDB(JSON), ElasticCache(Key, Value), Neptune(graphs) - 불완전한 쿼리, 조인
+- Object Store : S3, Glacier - 파일 저장
+- Data Warehouse : Redshift(OLAP), Athena - 데이터 분석을 위한 데이터 웨어하우스
+- Search : ElasticSearch (JSON)
+- Graph : Neptune – displays relationships between data : 데이터 간 관계를 보여주는 그래프 형식
+
+#97 RDS Features
+- Managed PostgreSQL / MySQL / MariaDB / Oracle / SQL Server
+- (참고로 현재 RDS 생성 페이지에서 Amazon Aurora가 managed db중에서 제일 먼저 선택되는 기본옵션이다. 이것만 봐도 아마존이 aurora를 장려하고 있다는 것을 알 수 있다. (2022-01-19))
+- DB instance & EBS Volume type and size를 사전에 provision해야 한다.
+- **Read Replicas & Multi AZ** 지원
+- OLTP - Online Transaction Processing(트랜잭션 처리 가능)
+- 동작 방식
+  - **small downtime when failover happens** : failover가 발생할 때 약간의 다운 타임이 있다.
+  - 즉 maintenance happens, scaling in read replicas / ec2 instance / restore EBS이 발생할 때 다운 타임이 존재한다는 것이다.
+  - Performance: **depends on EC2 instance type, EBS volume type**, ability to add Read Replicas. Storage auto-scaling & manual scaling of instance : 인스턴스 타입, 볼륨 타입에 따라 성능이 다르고, read replica를 추가해 읽기 성능을 향상시킬 수 있다는 점, 저장소 오토-스케일링 & manual 스케일링이 가능하다는 점으로 인해 성능은 천차만별이다.
+
