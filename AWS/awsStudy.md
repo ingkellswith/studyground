@@ -681,7 +681,40 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - **Read Replicas & Multi AZ** 지원
 - OLTP - Online Transaction Processing(트랜잭션 처리 가능)
 - 동작 방식
-  - **small downtime when failover happens** : failover가 발생할 때 약간의 다운 타임이 있다.
+  - **small downtime when failover happens** : failover가 발생할 때 약간의 다운 타임이 있다.(오로라는 30초 이내)
   - 즉 maintenance happens, scaling in read replicas / ec2 instance / restore EBS이 발생할 때 다운 타임이 존재한다는 것이다.
   - Performance: **depends on EC2 instance type, EBS volume type**, ability to add Read Replicas. Storage auto-scaling & manual scaling of instance : 인스턴스 타입, 볼륨 타입에 따라 성능이 다르고, read replica를 추가해 읽기 성능을 향상시킬 수 있다는 점, 저장소 오토-스케일링 & manual 스케일링이 가능하다는 점으로 인해 성능은 천차만별이다.
+- Backups are automatically enabled in RDS : 자동 백업, 백업본 default 유지 기간 7일(최대 35일), 트랜잭션 로그가 5분마다 백업됨
+- DB Snapshot : 유저가 직접 스냅샷 캡처하는 것
+- Maximum Storage Threshold : rds의 storage는 auto-scaling되지만 auto-scaling의 최대치를 필수적으로 정해주어야 한다.
+- Read Replica는 최대 5개(multi AZ or multi Region)
+- Replication은 **비동기** 작업이다. 즉 마스터 인스턴스에만 쓰고 읽기만 가능한 read replica에 비동기적으로 복제하는 방법을 택한다.
+- **For RDS Read Replicas within the same region, you don’t pay that fee** : same region은 그 대가로 돈을 지불하지 않는다, **cross region read replication역시 가능하지만 cost가 든다.**
+- RDS Multi AZ는 **동기** 작업이다. - **Zero downtime operation**, **no cost**, 가용성 증가(Increase availability), scaling이 아닌 Disaster Recovery을 위해 사용
+- 173p Multi-AZ 동작 과정 필히 참고
+- **Security**
+  - **No SSH access** : ssh 접속 안 된다. 필히 기억.
+  - If the master is not encrypted, the read replicas cannot be encrypted : 마스터 인스턴스가 encrypt되지 않으면 replica도 encrypt되지 않는다.
+  - Possibility to encrypt the master & read replicas with AWS KMS - **AES-256 encryption** : 저장된 데이터 암호화를 at rest encryption이라고 부른다.
+  - **In-flight encryption** : SSL통신을 하기 위해서는 MySQL같은 DB에 GRANT USAGE ON *.* TO 'mysqluser'@'%' **REQUIRE SSL;** 같이 설정을 해줘야 한다.
+  - **Network Security** : security group can communicate with RDS (ec2의 보안 그룹과 같은 개념)
+  - RDS에 IAM Authentication을 적용시키면 ec2에서 iam role이 iam으로부터 토큰을 받아와 rds에 ssl로 접속한다.
 
+#98 Amazon Aurora Features
+- Define EC2 instance type for aurora instances
+- **Data is held in 6 replicas, across 3 AZ**
+- 5x performance improvement over MySQL on RDS, over 3x the performance of Postgres on RDS : 성능이 좋다.
+- Aurora storage automatically grows in increments of 10GB, up to 128 TB : rds와 마찬가지로 오토 스케일링을 지원한다.
+- Aurora can have 15 replicas while MySQL has 5, and the replication process is faster
+- Failover in Aurora is instantaneous. It’s HA (High Availability) native.
+- **Support for Cross Region Replication**
+- **Shared Storage Volume**
+  - 한 개의 마스터만 데이터를 써도 모든 인스턴스가 볼륨을 공유하므로 데이터를 읽어낼 수 있다.
+  - **Shared Storage Volume**은 **Replication** + **Self Healing** + **Auto Expanding**의 특성을 지닌다.
+- **Aurora DB Cluster** : 181p 참고
+- Aurora Multi-Master : 멀티 마스터 즉각적인 failover을 가능하게 해준다. 30초도 길다고 생각한다면 멀티 마스터 사용가능.
+- Aurora Global Database (recommended)
+  - disaster recovery가 1분 안에 가능
+  - **decreasing latency**
+  - 1개의 마스터 인스턴스, 최대 16개의 read-only인스턴스 in 최대 5개의 region, region간의 replication lag은 1초 미만이다.
+- Aurora Serverless – for unpredictable / intermittent workloads
