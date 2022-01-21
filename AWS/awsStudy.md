@@ -315,6 +315,7 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - 135강 s3 CORS 이론 읽어보기
 - Explicit DENY in an IAM Policy will take precedence over an S3 bucket policy.
 - IAM Policy가 s3 bucket policy에 우선하게 하려면 explicit deny를 iam policy에 적용하면 된다.
+- 99.999999999% durability / 99.99% availability : durability는 추후 언젠가는 데이터를 받을 수 있음을 의미하고, availabilty는 즉시 데이터를 받을 수 있음을 의미한다.
 
 #48 S3 Storage Classes : One Zone IA를 제외한 모든 클래스는 3개 이상의 az를 가진다. 
 - S3 Standard
@@ -713,8 +714,62 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
   - **Shared Storage Volume**은 **Replication** + **Self Healing** + **Auto Expanding**의 특성을 지닌다.
 - **Aurora DB Cluster** : 181p 참고
 - Aurora Multi-Master : 멀티 마스터 즉각적인 failover을 가능하게 해준다. 30초도 길다고 생각한다면 멀티 마스터 사용가능.
-- Aurora Global Database (recommended)
+- **Aurora Global Database (recommended)**
   - disaster recovery가 1분 안에 가능
   - **decreasing latency**
   - 1개의 마스터 인스턴스, 최대 16개의 read-only인스턴스 in 최대 5개의 region, region간의 replication lag은 1초 미만이다.
 - Aurora Serverless – for unpredictable / intermittent workloads
+
+#99 ElastiCache Features
+- **Managed** Redis / Memcached (similar offering as RDS, but for caches)
+- Must provision an EC2 instance type
+- Key/Value store, Frequent reads : 세션 관리 최적화
+- **Clustering(Redis)**, Multi AZ, Read Replicas
+- **Redis**
+  - Multi AZ, Read Replicas, **Backup and restore features**
+  - AOF(Append Only File) : redis는 in-memory db이므로 인스턴스 종료 시 데이터 유실을 방지하기 위해서 명령문이 실행될 때마다 1초 정도 단위로 파일에 저장한다.
+- **MEMCACHED**
+  - Multi-node for partitioning of data(sharding) : 샤딩이란 테이블의 수평 분할을 의미한다. 데이터가 많아질 경우를 대비하여 한 테이블의 데이터를 여러 데이터베이스에 나누어 저장함을 말한다. 한 레코드를 여러 디비에 저장하는 read replica가 아니라, 두 레코드를 두 개의 db에 나누어 저장하는 것이 샤딩이다.
+  - **No high availability(replication), No backup and restore** : 데이터가 유실되면 그대로 유실된다.
+  - Multi-threaded architecture
+  - Supports SASL(Simple Authentication and Security Layer)-based authentication : 애플리케이션 프로토콜들로 부터 인증 메커니즘을 분리한 것이 SASL이다. 즉 https같은 프로토콜을 사용하지 않고, 다른 보안 레이어를 사용한 것이다.
+- **Cache Security**
+  - **Do not support IAM authentication** : IAM Authentication을 지원하지 않는다. IAM Authentication을 사용하면 권한을 가진 aws유저가 redis에 어떤 값이든지 넣을 수 있기 때문에 그런 것이 아닌가 추측해본다. redis는 세션을 관리하는 데에 주로 쓰이기 때문에 보안이 중요할 수 밖에 없다.
+  - **IAM policies on ElastiCache are only used for AWS API-level security** : API-level security 정도만 iam policy로 관리할 수 있다.
+  - **Redis AUTH**
+    - You can set a **password/token** when you create a Redis cluster
+    - This is an extra level of security for your cache 
+    - Support SSL in flight encryption
+
+#100 DynamoDB Features
+- AWS proprietary(전용, 독점 정도의 뜻) technology, managed NoSQL database
+- Serverless, **provisioned capacity**, auto scaling, on demand capacity
+- Can replace **ElastiCache as a key/value store** (storing session data for example)
+- **Multi AZ by default**
+- **Backup / Restore feature**
+- Read and Writes are decoupled : 읽기와 쓰기 분리
+- **DAX for read cache** : elasticache의 대체재가 될 수 있는 이유 중 하나인 것 같다.
+- Security, authentication and authorization is done **through IAM**
+- **DynamoDB Streams** : 보통 kinesis 또는 lambda로 데이터를 보낼 수 있다.
+- **Global Table feature** : 읽기와 쓰기를 어떤 region에도 할 수 있다는 것이 global table이다. 이는 active-active replication이 있기 때문에 가능하다. 여러 지역 간에 양방향의 replication이 가능하다는 것이다.
+- **Can only query on primary key, sort key, or indexes**
+
+#101 Athena Features
+- Fully **Serverless database** with SQL capabilities
+- Used to query data in S3, Pay per query, Output results back to S3
+- Secured through **IAM**
+
+#102 Redshift
+- Redshift is based on PostgreSQL, but it’s not used for OLTP(Online transaction processing)
+- It’s OLAP – online analytical processing (analytics and **data warehousing**) : 즉 쓰기를 위한 db가아니라 분석을 위한 db이다.
+- **Columnar storage** of data (instead of row based)
+- **Massively Parallel Query Execution (MPP)** : 분석을 위한 쿼리를 많이 하므로 병렬 쿼리를 지원한다.
+- BI(Business Intelligence : 데이터를 분석하여 효과적인 의사결정 도모) tools such as AWS Quicksight or Tableau integrate with it
+- Data is loaded from S3, DynamoDB, DMS, other DBs…
+- From 1 node to 128 nodes, up to 128 TB of space per node
+- **Leader node**: for query planning, results aggregation
+- **Compute node**: for performing the queries, send results to leader
+- **Redshift Spectrum**: perform queries directly against S3 (no need to load)
+- **Backup & Restore을 지원하지만 Multi AZ를 지원하지 않는다.**
+- 따라서 disaster recovery를 snapshot를 캡처해서 직접 설정해줘야 한다. 스냅샷을 캡처해 멀티 리전에 백업하는 과정은 자동화(aws 공식 지원)될 수 있다. 531p 참고
+- 
