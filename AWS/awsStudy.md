@@ -767,9 +767,153 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - BI(Business Intelligence : 데이터를 분석하여 효과적인 의사결정 도모) tools such as AWS Quicksight or Tableau integrate with it
 - Data is loaded from S3, DynamoDB, DMS, other DBs…
 - From 1 node to 128 nodes, up to 128 TB of space per node
-- **Leader node**: for query planning, results aggregation
-- **Compute node**: for performing the queries, send results to leader
-- **Redshift Spectrum**: perform queries directly against S3 (no need to load)
+- **Redshift Cluster**
+  - **Leader node**: for query planning, results aggregation
+  - **Compute node**: for performing the queries, send results to leader
+- **Redshift Spectrum**: perform queries directly against S3 (no need to load), S3를 대상으로 로딩없이 쿼리 가능
+  - Redshift Cluster가 필수적으로 enable되어야 한다.
 - **Backup & Restore을 지원하지만 Multi AZ를 지원하지 않는다.**
-- 따라서 disaster recovery를 snapshot를 캡처해서 직접 설정해줘야 한다. 스냅샷을 캡처해 멀티 리전에 백업하는 과정은 자동화(aws 공식 지원)될 수 있다. 531p 참고
-- 
+- 따라서 disaster recovery를 snapshot를 캡처해서 직접 설정해줘야 한다. 스냅샷을 캡처해 멀티 리전에 백업하는 과정은 자동화(aws 공식 지원)될 수 있다. 531p 참고 
+- disaster recovery를 어찌 되었든 자동화가능하기 때문에 **auto healing features, cross-region snapshot copy**의 특성을 가진다.
+- vs Athena : 아테나도 역시 s3를 대상으로 쿼리하는데 아테나에 비해 faster queries/joins/aggregations thanks to **indexes**의 장점을 가진다.(Redshift는 인덱스를 가지는 특성이 있다.)
+
+#103 Glue, Neptune
+- 535p 참고
+
+#104 ElasticSearch
+- Example: In DynamoDB, you can only find by primary key or indexes
+- With ElasticSearch, **you can search any field, even partially matches** : ElasticSearch는 기본적으로 NoSQL database라고 한다. 검색 엔진이기도 한데 NoSQL database라.. 더 조사가 필요할 것 같다.
+- 따라서 DynamoDB같은 데이터베이스에 데이터를 store하고 ElasticSearch로 데이터를 서치하는 작업을 할 수 있다고 한다.
+- **Cognito를 지원한다.**
+
+#105 CloudWatch Metrics
+- Metric이란? : **Metric is a variable to monitor** (CPUUtilization, NetworkIn…)
+- Metrics belong to namespaces : 한 메트릭은 한 네임스페이스에 속한다.
+- Metrics have timestamps : metric은 시간 속성을 필수적으로 가진다. 이는 모니터링하는 metric간에 같은 timestamp를 공유해야 하기 때문에 중요하다. dashboard로 여러 metric들을 관찰할 때 같은 시간대인 것이 보장되어야 편하기 때문이다.
+- **Dimension** is an attribute of a metric (instance id, environment, etc…) : Up to 10 dimensions per metric
+- **EC2 Detailed monitoring** : 5분마다 metric 갱신이 default, Detailed monitoring을 사용하면 1분마다 갱신 가능
+  - **EC2 Memory usage is by default not pushed** : 메모리 사용량은 default지표가 아니고, unified agent를 ec2 instance내부에 설치 후 메모리 사용량을 custom metric으로 사용해야 한다.
+- **Custom Metrics**
+  - Use API call **PutMetricData**
+  - **StorageResolution** : 1분마다 metric 갱신이 default, High Resolution을 사용하면 1/5/10/30초마다 갱신 가능
+  - Accepts metric data points **two weeks in the past and two hours in the future** (make sure to configure your EC2 instance time correctly) : Cloudwatch로 보내지는 metric은 과거 2주, 미래 2시간 사이의 metric만 받는다. 따라서 metric을 보낼 때 timestamp를 잘 설정해야 한다.
+- CloudWatch Dashboards
+  - Great way to setup custom dashboards for **quick access to key metrics** and alarms : 계속 관찰해야 할 key metric에 빠르게 접근 가능
+  - Dashboards are global, Dashboards can include graphs from different AWS accounts and regions : 한 대시보드에 여러 region의 metric을 넣을 수 있다. 예를 들어 한국 region metric과 미국 region metric이 한 대시보드에 공존하는 것이다.
+  - Dashboards can be shared with people who don’t have an AWS account : aws계정이 없어도 다른 사람들과 공유가능, aws계정이 없는 다른 팀과의 협업에 좋을 듯?
+  - You can setup automatic refresh : 대시보드를 시간마다 자동 갱신가능
+
+#106 CloudWatch Logs
+- **Log groups**: arbitrary name, **usually representing an application** : 예를 들어 lambda에서 로그가 쌓인 것이라면 lambda가 prefix나 postfix로 붙은 naming을 사용한다. 물론 커스텀 로그는 사용자가 직접 이름을 설정한다.
+- **Log stream**: instances within application / **log files** / containers - 로그 파일의 용량이 어느 정도 커지면 로그 파일을 보낼수도 있고, 로그가 생길 때마다 보낼 수도 있는 것 같다.
+  - Log group안에 Log stream이 로우처럼 쌓이는 방식이다.
+- Can define log expiration policies (never expire, 30 days, etc..) : never expire로 설정할 시 일종의 데이터베이스로 사용가능하다.
+- CloudWatch Log에 metric filter를 사용하면, custom metric을 만들어낼 수 있다.
+- **CloudWatch Insights**
+  - CloudWatch Logs Insights can be used to query logs and add queries to CloudWatch Dashboards : CloudWatch Logs를 대상으로 쿼리할 수 있고, 쿼리 결과를 dashboard에 쌓을 수도 있는 것 같다.
+- **S3 Export**
+  - API NAME : **CreateExportTask**을 사용해서 s3로 로그를 export할 수 있다.
+  - 하지만 최대 12시간이 걸리기 때문에 Not near-real time or real-time이기 때문에 실시간으로 전송하려면 Logs Subscriptions을 사용해야 한다.
+- **CloudWatch Logs Subscriptions**
+  - CloudWatch Subscription Filter을 사용하면 Lambda혹은 Kinesis에 데이터를 보내 real-time에 가깝게 사용할 수 있다. 549p 참고
+- **CloudWatch Logs Agent & Unified Agent**
+  - By default, no logs from your EC2 machine will go to CloudWatch : 따라서 agent를 ec2혹은 on-premise server에 설치해 원하는 로그를 보낼 수 있다.
+  - Unified Agent는 최신 버전의 Logs Agent이고 더 많은 기능을 지원한다.
+  - **Unified Agent**
+    - Collect additional system-level metrics : **CPU, Disk metrics, RAM, Netstat**, Processes, Swap Space
+
+#107 CloudWatch Alarms
+- **Period**
+  - metirc을 몇 초마다 평가할 것인가를 정한다.
+  - High resolution custom metrics: 10, 30, 60초 단위로 설정 가능
+- **Alarm States**
+  - OK : 문제 없는 상태
+  - ALARM : 문제 있는 상태
+  - INSUFFICIENT_DATA : metric을 보고 판단하기에 데이터가 불충분한 경우
+- **Alarm Targets**
+  - Stop, Terminate, Reboot, or Recover an EC2 Instance
+  - Trigger Auto Scaling Action
+  - Send notification to SNS
+
+#108 CloudWatch Events
+- Event Pattern: Intercept events from AWS services : aws service에서 발생하는 이벤트를 가져올 수 있다.
+  - Example sources: EC2 Instance Start, CodeBuild Failure
+  - Can intercept any API call with **CloudTrail integration**
+- Schedule or Cron 
+  - 예시로 특정 이벤트를 매 시간마다 발생하게 만들 수 있다.
+- A JSON payload is created from the event and passed to a target : 기본적으로 json 형식으로 이벤트가 대상에게 전달된다.
+
+#109 Amazon EventBridge
+- EventBridge is the next evolution of CloudWatch Events : EventBridge는 CloudWatch Events의 최신 버전이다.
+- Amazon EventBridge builds upon and **extends** CloudWatch Events
+- Over time, the CloudWatch Events name will be replaced with EventBridge
+- Default event bus: generated by AWS services (CloudWatch Events) > EC2 Instance Start, CodeBuild Failure같은 aws specific한 이벤트가 발생할 경우 사용
+- **EventBridge specific한 기능**
+  - Partner event bus: receive events from SaaS service or applications (Zendesk, DataDog, Segment, Auth0…)
+  - 예를 들어, 데이터독에서 모니터링하다 문제 있을 경우 이벤트를 발생시켜 EventBridge로 전달시킬 수 있다는 것이다.
+  - Custom Event buses: for your own applications
+  - **The Schema Registry**
+    - The Schema Registry allows you to generate code **for your application**, that will know in advance how data is structured in the event bus
+    - 스키마 레지스트리는 event가 발생할 경우 전달될 json을 어떤 구조로 설계할 것인지를 미리 정해놓기 위해 사용하는 서비스이다.
+    - EventBridge can **analyze the events in your bus** and infer the schema
+- **Event buses can be accessed by other AWS accounts** : 다른 계정에 의해 event bus가 access가능한 것은 Partner event bus 때문에 권한을 열어줘야해서 그런 것이 아닌가 추측해본다.
+
+#110 AWS CloudTrail
+- CloudTrail is enabled by default!
+- 참고
+  - IAM Credential Report : 한 계정 내부의 IAM user들의 자격 증명의 상태를 관리
+  - IAM Access Advisor : last-access를 파악해 권한 관리 가능
+- Provides governance(관리), compliance(규정 준수) and audit(감사) for your AWS Account
+- Get an history of events / API calls made within your AWS Account by:
+  - Console
+  - SDK
+  - CLI
+  - AWS Services
+- **Events are stored for 90 days in CloudTrail**
+  - 장기 보관을 할 것이라면 s3에 보내면 된다.
+- **Can put logs from CloudTrail into CloudWatch Logs or S3**
+- **A trail can be applied to All Regions (default) or a single Region.** : 모든 Region의 access를 파악할 수 있다.
+- **If a resource is deleted in AWS, investigate CloudTrail first!** : 자원을 누가 삭제했는지 보고 싶다면 cloudtrail을 사용하면 된다.
+- **CloudTrail Events**
+  - **Management Events**
+    - Operations that are performed on resources in your AWS account : 예를 들어 ec2에 iam role을 설정해주는 것. 웬만한 aws service는 api call가 호환되므로, api call이 가능한 모든 서비스는 cloudtrail로 추적이 가능하다고 보면 된다.
+    - Read Eventsd와 Write Events를 분리할 수 있다.
+  - **Data Events**
+    - **By default, data events are not logged (because high volume operations)** : 데이터 이벤트는 기본적으로 쌓이지 않는다.
+    - 이 옵션을 활성화하면 getObject, putObject 등의 s3 event가 발생할 때마다 로그를 쌓을 수 있다.
+  - **CloudTrail Insights Events**
+    - CloudTrail Insights : CloudTrail Insights to detect unusual activity **in your account** > 계정 레벨에서 계정 내부 유저의 비정상적인 활동을 감지할 수 있다. 예시 565p 참고
+    - Continuously analyzes write events to detect unusual patterns : CloudTrail은 지속적으로 Management Events를 분석하면 이상이 없는지 파악하고 이상 감지 후 이벤트를 CloudTrail Console 또는 s3 또는 eventbridge에 보낸다.
+
+#111 AWS Config
+- Helps with **auditing and recording compliance(규정 준수)** of your AWS resources : 규정 준수라고 함은 aws를 사용하면서 자신이 생각한대로 각종 서비스들을 잘 사용하고 있나 정도로 생각하면 된다.
+- Helps record configurations and changes over time : 아래에서 compliance를 audit하는 예시를 들 수 있다.
+  - Is there unrestricted SSH access to my security groups?
+  - Do my buckets have any public access?
+  - How has my ALB **configuration changed over time**?
+- You can receive alerts (SNS notifications) for any changes
+- AWS Config is a **per-region service**
+- Can be aggregated **across regions and accounts** : CloudTrail, CloudWatch Dashboard와 다르게 per region 서비스이지만 cross region하게 만들 수 있다.
+- Possibility of storing the configuration data into S3 (analyzed by Athena) : CloudWatch, CloudTrail과 동일
+
+#112 AWS Config Rules
+- **Managed config rules** (over 75)
+- **Make custom config rules** (must be defined in AWS Lambda)
+  - Example: evaluate if each EBS disk is of type gp2
+  - Example: evaluate if each EC2 instance is t2.micro
+- Rules can be evaluated / triggered
+  - For each config change 
+  - At regular time intervals : triggered
+- **AWS Config Rules does not prevent actions from happening(no deny)** : 예시로 ec2타입을 t2로 aws config로 설정하고 r계열의 인스턴스를 생성할 수도 있다는 뜻.
+- **AWS Config Resource**
+  - View compliance of a resource over time
+  - View configuration of a resource over time
+  - **View CloudTrail API calls of a resource over time** : compliance, configuration는 compliance(규정 준수) check을 위해서 당연히 볼 수 있는 것인데 Cloudtrail API calls까지 볼 수 있는 것도 생각해야 한다.
+- **Config Rules Remediations** : Non-compliant resource에 대한 회복
+  - Non-compliant한 resource에 대해 자동으로 **Auto-Remediation Action**(SSM Document: AWSConfigRemediationRevokeUnusedIAMUserCredentials)을 실행할 수 있다.
+  - SSM Automation을 사용하지 않고, Custom Automation을 사용해서 lambda function을 사용할 수도 있다.
+  - Remediation실행 후에도 회복이 안되면 5번을 dafault로 시도
+- **Config Rules Notifications**
+  - aws config는 eventbridge에 event를 전달할 수 있다.
+  - aws config에서 발생하는 모든 이벤트를 eventbridge에 전달하고 eventbridge는 sns에 전달할 수 있는데 이 과정에서 특정 이벤트만 원한다면 sns filter를 사용하면 된다.
+  - CloudWatch vs CloudTrail vs Config 571p 필히 참고.
