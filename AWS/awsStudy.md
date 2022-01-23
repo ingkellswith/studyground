@@ -917,3 +917,47 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
   - aws config는 eventbridge에 event를 전달할 수 있다.
   - aws config에서 발생하는 모든 이벤트를 eventbridge에 전달하고 eventbridge는 sns에 전달할 수 있는데 이 과정에서 특정 이벤트만 원한다면 sns filter를 사용하면 된다.
   - CloudWatch vs CloudTrail vs Config 571p 필히 참고.
+
+#113 AWS STS – Security Token Service
+- Allows to grant limited and temporary access to AWS resources : aws 자원에 대한 일시적 접근을 원할 때 사용
+- **Token is valid for up to one hour (must be refreshed)** : 최대 1시간까지 유효한 토큰을 사용
+- AssumeRole : 아래 두 가지 경우에 사용된다.
+  - 1. Within your own account: 강화된 보안을 위해서
+  - 2. Cross Account Access: 예를 들어, development계정의 유저가 배포를 위해서 production계정의 역할이 필요한 경우 production계정을 주는 게 아니라 배포에 필요한 role만 잠깐 sts로 줄 수 있다.
+  - https://docs.aws.amazon.com/ko_kr/IAM/latest/UserGuide/tutorial_cross-account-with-roles.html 참고
+- Assume Role 사용법
+  - 1. Define an IAM Role within your account or cross-account
+  - 2. Define which principals(**a person or application that can make a request** for an action or operation on an AWS resource) can access this IAM Role : 누가 접근할 수 있는지 설정
+  - 3. Use AWS STS (Security Token Service) to retrieve credentials and impersonate(모방) the IAM Role you have access to (AssumeRole API) : 576p 참고
+  - 간단하게 생각하면 된다. 예를 들어 development계정의 유저가 production s3 bucket에 접근해야할 일이 생긴다면 미리 production s3 bucket에 접근할 수 있는 IAM Role을 만들어놓고, sts token을 development계정에 부여해서 production s3 bucket에 일시적으로 접근하는 것이다.
+
+#114 Identity Federation in AWS
+- Federation lets users outside of AWS to assume temporary role for accessing AWS resources. : 외부 서비스 로그인으로 aws 자원에 직접 접근할 때 사용하는데에 최적화되어 있다.
+- Using federation, you don’t need to create IAM users (user management is outside of AWS) : 예를 들어 백만명의 사용자가 aws자원에 접근해야 할 때 일일이 계정을 생성해주기는 어렵다.
+- Identity Federation은 외부에서 어떤 인증 방법(SAML 2.0, Web Identity Federation, Custom Identity Broker)을 사용하든지 매커니즘은 비슷하다. **외부 서비스에 로그인하고, aws에 액세스 요청 후, sts로 토큰을 받아 aws자원에 직접 접근하는 방식이다.**
+- SAML2.0(Security Assertion Markup Language, 다른 애플리케이션에 인증 토큰을 전달할 수 있게 해주는 로그인 표준)은 deprecated이고, Amazon Single Sign On (SSO)을 권장한다.
+- **Custom Identity Broker Application** : 이것은 SAML 2.0을 지원하지 않는 곳에 사용하는데, identity broker가 sts token을 받아온다는 점 빼고는 기존 identity federation 동작 방식과 비슷하다.(AssumeRole or GetFederationToken API사용)
+  - The identity broker must determine the appropriate IAM policy : The identity broker가 IAM policy를 정의한다.(당연하지만 어떤 역할을 원하는지 aws에 말해줘야 하므로)
+- AssumeRoleWithWebIdentity : deprecated이고 Cognito로 대체 가능하다.
+- **Federated Identity Pools** using **Cognito**
+  - 중요한 세 가지 과정만 기억하자.
+  - 1. Identity Provider(Cognito User Pool, 페이스북 로그인, 구글 로그인, SAML 로그인 등)에 로그인 후 토큰을 받는다.
+  - 2. 토큰을 Cognito Federated Identity에 넘긴 후 Cognito Federated Identity는 Identity Provider토큰이 유효한 지 검증한다.
+  - 3. sts로 temporary credential 리턴
+
+#115 Microsoft Active Directory
+- Overview는 간략하게 짚고 넘어간다. **AWS Directory Services 3가지만 외우고 넘어가면 된다.**
+- Active Directory helps you organize your company's users, computer and more : Database of objects, 회사 내의 유저 계정, 컴퓨터, 프린터 등을 데이터로 저장
+- Centralized security로 domain controller에서 모든 권한을 가지고 하위 오브젝트들을 관리한다.
+- Lightweight Directory Access Protocol(LDAP) 사용 : TCP/IP 위에서 디렉터리 서비스를 조회하고 수정하는 응용 프로토콜
+- **AWS Directory Services**
+  - **AWS Managed Microsoft AD**
+    - on-premise AD 사용
+    - **MFA** 지원
+    - Establish **“trust” connections** with your on-premise AD
+  - **AD Connector**
+    - on-premise AD 사용
+    - **프록시** 사용
+  - **Simple AD**
+    - on-premise AD를 사용할 수 없을 때 사용
+    - ec2 instance사용가능
