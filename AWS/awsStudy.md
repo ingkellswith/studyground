@@ -961,3 +961,45 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
   - **Simple AD**
     - on-premise AD를 사용할 수 없을 때 사용
     - ec2 instance사용가능
+
+#116 AWS Organizations
+- Global service
+- Allows to manage multiple AWS accounts : 1개의 master account와 수 많은 member account로 이루어진다.
+- 한 member account는 한 organization에만 속할 수 있다. 
+- API is available to automate AWS account creation
+- **Multi Account Strategies** : aws organization을 활용할 다양한 방법이 존재한다.
+  - Create accounts per department, 
+  - per cost center, per dev / test / prod, based on regulatory restrictions (using SCP : Security Control Policy)
+  - for better **resource isolation (ex: VPC)**, to have separate per-account service limits, **isolated account for logging**
+- **Organizational Units(OU)** : OU는 하나의 그룹이라고 생각하면 된다. OU안에 그룹을 만들면 그룹 안의 계정들을 OU의 속성을 공유한다.
+- **Security Control Policy** : **Whitelist or blacklist** IAM actions - allow하거나 deny
+  - Applied at the OU or Account level : OU(사실상 Account를 묶은 그룹에 가까움)와 account모두에 적용가능하고 개별 권한 필요한 경우 account에 적용
+  - Does not apply to the Master Account : **master account에는 scp를 적용해도 적용되지 않는다.**
+  - SCP is applied to all the Users and Roles of the Account, including Root user : 계정에서 iam user를 만들든 루트 계정을 사용하든 상관 없이 scp는 한 계정에 적용하면 그 계정에 **전역적**으로 적용된다.
+  - **기본적으로 deny가 default로 적용되고 deny, allow가 공존하는 경우 deny를 우선적용한다.**
+- **Moving Accounts**
+  - 한 조직은 멤버를 다른 조직으로 옮기려면 조직에서 멤버를 삭제해야 가능
+  - 한 조직의 master account를 다른 조직으로 옮기는 것 역시 위와 같이 기존 조직에서 완전히 벗어나야 가능
+
+#117 IAM Roles vs Resource Based Policies
+- When you assume a role (user, application or service), you give up your original permissions and take the permissions assigned to the role : assume role은 자신의 권한을 포기하고 다른 사람에게 넘기는 것
+- When using a resource based policy, the principal doesn’t have to give up his permissions : 자신의 권한을 포기 안해도 됨
+
+#118 IAM Permission Boundaries
+- IAM Permission Boundaries are supported **for users and roles** (not groups)
+- Advanced feature to use a managed policy to set the **maximum permissions an IAM entity can get** : IAM 엔티티(유저 혹은 role)가 가질 수 있는 권한의 최대치를 설정할 수 있다.
+- 예를 들어 administrator권한을 부여해도 Permission Boundary가 s3한정이면 s3에 한정된 권한을 갖게 된다.
+
+#119 Organization SCP & Permissions Boundary & Identity-based policy
+- Organization SCP & Permissions Boundary & Identity-based policy 3가지를 동시에 활용해서 보안 강화 가능
+- Identity-based policy : 어떤 identity를 가진 계정 혹은 role에 부여하는, identity를 대상으로 권한을 부여하는 policy
+- Resource-based policy : 리소스에 부여하는, 리소스를 대상으로 특정 identity만 허용하겠다는 policy
+- https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_identity-vs-resource.html : 공식 문서 참고
+
+#120 IAM Policy Evaluation Logic
+- 1. Deny Evaluation
+- 2. Organization SCP
+- 3. Resource-based policies
+- 4. IAM permissions boundaries
+- 5. Session policies
+- 6. Identity-based policies
