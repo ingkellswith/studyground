@@ -997,9 +997,27 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_identity-vs-resource.html : 공식 문서 참고
 
 #120 IAM Policy Evaluation Logic
-- 1. Deny Evaluation
-- 2. Organization SCP
+- 1. Deny Evaluation : 무언가를 deny하는 effect가 있다? 그렇다면 무조건 allow보다 우선적용되어 무조건 deny된다.
+- 2. Organization SCP 
 - 3. Resource-based policies
 - 4. IAM permissions boundaries
 - 5. Session policies
-- 6. Identity-based policies
+- 6. Identity-based policies\
+
+#121 AWS Resource Access Manager(RAM)
+- **Share AWS resources that you own with other AWS accounts** : 한 aws계정이 가진 리소스를 다른 aws계정과 쉐어한다.
+- Avoid resource duplication : 리소스 복제가 아니라 공유를 지향한다.
+- **VPC Subnets**의 경우 RAM이 자주 사용되므로 이 케이스는 꼭 기억하도록 하자. 
+- 다이어그램 604p를 참고하면 **private subnet내에서 private ip로 리소스간 접근이 가능해** 보안 그룹끼리만 잘 설정해주면 다른 계정에 있는 서로 다른 리소스 간에 접근이 쉽게 가능하다.
+
+#122 AWS Single Sign-On (SSO)
+- Centrally manage Single Sign-On to access multiple accounts and 3rd-party business applications. : On-premise서버 혹은 **Identity Store SAML 2.0 Compatible**과 연동하여 sso에 로그인하면 aws console, business cloud application(slack, dropbox), custom SAML application 모두를 한 로그인으로 사용할 수 있다. 말 그대로 Single Sign On이다.
+- **Integrated with AWS Organizations**
+- Supports SAML 2.0 markup
+- Integration with on-premise Active Directory
+- Centralized permission management
+- 607p 참고
+
+#123 SSO vs AssumeRoleWithSAML
+- **AssumeRoleWithSAML**는 3rd party앱에 로그인하고 sts에 credential요청 후 토큰을 받아 aws resource에 접근한다.
+- 반면 **SSO**는 SSO Login Portal(Identity Store SAML 2.0 Compatible과 연동된)에만 로그인하면 credentail을 받아 aws resource에 바로 접근할 수 있고 aws에서 AssumeRoleWithSAML에 비해서 권장하는 방식이다.
