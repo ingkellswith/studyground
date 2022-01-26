@@ -1021,3 +1021,50 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 #123 SSO vs AssumeRoleWithSAML
 - **AssumeRoleWithSAML**는 3rd party앱에 로그인하고 sts에 credential요청 후 토큰을 받아 aws resource에 접근한다.
 - 반면 **SSO**는 SSO Login Portal(Identity Store SAML 2.0 Compatible과 연동된)에만 로그인하면 credentail을 받아 aws resource에 바로 접근할 수 있고 aws에서 AssumeRoleWithSAML에 비해서 권장하는 방식이다.
+
+#124 AWS KMS(Key Management Service)
+- Fully integrated with IAM for authorization
+- server side encryption에 효과적
+- **Symmetric(AES-256 keys)**
+  - Necessary for **envelope encryption** : envelope encryption이란 한 키로 암호화한 것을 다른 키로 한 번 더 암호화하는 것을 말한다. (envelope encryption은 developer exam범위이고 solutions architect범위는 아니다.)
+  - You never get access to the Key unencrypted (must call KMS API to use)
+- **Asymmetric(RSA & ECC key pairs)**
+  - The public key is downloadable, but you can’t access the Private Key unencrypted
+  - Use case: Sign/Verify operations, encryption outside of AWS by users who can’t call the KMS API : public key가 downloadable이므로 KMS API를 사용할 수 없는 상황이라면 고려 가능
+- Symmetric key와 Asymmetric의 private key는 공통적으로 unencrypted상태로 볼 수 없게 설계되었다.
+- Three types of **Customer Master Keys(CMK) : KMS와 동의어이고 KMS가 최신 버전**
+  - AWS Managed Service Default CMK: free > 예를 들어 EBS사용할 때 at rest encryption으로 default kms를 사용한다면 요금이 free라는 것이다.
+  - 나머지는 커스텀키를 생성하거나 import하는 것인데 개당 $1/month이다.
+- aws에서 관리하는 KMS내부의 키는 볼 수 없다. 따라서 모든 보안은 aws에서 맡기는 것이고, rotate key로 보안을 강화할 수 있다. 
+- KMS can only help in encrypting up to 4KB of data per call
+- If data > 4 KB, use envelope encryption : KMS에서 4KB이상의 데이터는 envelope encryption을 사용한다.
+- **To give access to KMS to someone** : IAM Policy뿐만 아니라 Key Policy도 설정해야 한다는 것을 기억하자.
+  - Make sure the **Key Policy** allows the user : Key policy 설정 필요
+  - Make sure the IAM Policy allows the API calls : IAM Policy 설정 필요
+
+#125 KMS Key Policies
+- Control access to KMS keys, “similar” to S3 bucket policies : s3 bucket policy처럼 접근을 제한하는 policy를 말한다.
+- **Default KMS Key Policy**
+  - policy를 따로 설정하지 않았을 경우 적용되는 policy
+  - Complete access to the key to the root user = entire AWS account : 루트 유저를 포함한 IAM의 모든 계정이 이 키에 접근 가능
+  - 따라서 이 경우는 IAM policy만 잘 설정해주면 Key Policy가 default로 적용되는 것이다.
+- **Custom KMS Key Policy**
+  - 커스텀으로 어떤 user, role이 이 키를 사용할 수 있는지 정의한다. 당연히 policy에 따라서 다른 계정도 이 키에 접근할 수 있다.
+
+#126 KMS Automatic Key Rotation
+- **For Customer-managed CMK(not AWS managed CMK)** : AWS Managed Key는 3년마다 rotate된다고 한다. Customer Managed Key는 AWS Managed Key보다 보안이 취약할 수 있다고 판단한 것 같다.
+- If enabled: automatic key rotation happens every 1 year
+- Previous key is **kept active** so you can decrypt old data : 이전 키는 이전 데이터들을 위해서 절대 삭제되면 안된다.
+- New Key has the same CMK ID (only the backing key is changed)
+- Automatic Key Rotation이 발생하면 CMK ID는 변경되지 않고 내부의 (Backing Key)실제 키 값만 변경된다. 물론 Old Backing Key도 save된다.
+
+#127 KMS Manual Key Rotation
+- **90일, 180일** 등의 간격으로 key를 rotate할 수 있다.
+- **New Key has a different CMK ID** : 당연히 backing key도 바뀐다. alias만 유지 가능
+- Better to use **aliases** in this case (to hide the change of key for the application) : new key를 생성해도 애플리케이션에서 api변경 없이 사용가능할 수 있도록 해주는 것이 alias이다.
+- Good solution to rotate CMK that are not eligible for automatic rotation (like asymmetric CMK) : **비대칭키는 automatic rotation을 지원하지 않는다.** 개인적인 의견으로는 비대칭키는 public, private key 2개가 존재해서 자동 관리가 좀 부담스러운 것 같다.
+
+#128 SSM Parameter Store
+- Secure storage for configuration and secrets
+- Serverless, scalable, durable, easy SDK
+- Version tracking of configurations / secrets
