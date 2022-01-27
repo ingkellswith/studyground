@@ -1065,6 +1065,61 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - Good solution to rotate CMK that are not eligible for automatic rotation (like asymmetric CMK) : **비대칭키는 automatic rotation을 지원하지 않는다.** 개인적인 의견으로는 비대칭키는 public, private key 2개가 존재해서 자동 관리가 좀 부담스러운 것 같다.
 
 #128 SSM Parameter Store
-- Secure storage for configuration and secrets
-- Serverless, scalable, durable, easy SDK
-- Version tracking of configurations / secrets
+- Secure storage for configuration and secrets : 설정에 필요한 여러 환경 변수들을 저장하기에 좋은 서비스
+- **Serverless**, scalable, durable, **easy SDK**
+- Version tracking of configurations / secrets : 버저닝 지원
+- Notifications with CloudWatch Events : 시크릿에 만료 기한을 설정하면 나중에 만료 며칠 전인지 event를 발생시킬 수 있다.
+- **SSM Parameter Store Hierarchy**
+  - /my-department/my-app/dev/db-url : GetParameters로 이 경로에 저장된 키를 받아오는 것이 가능
+  - /my-department/my-app/dev/amzn2-ami-hvm-x86_64-gp2 : GetParametersByPath로 PATH자체를 받아오는 것이 가능
+
+#129 AWS Secrets Manager
+- Newer service, meant for storing secrets : 시크릿 키 저장에 특화된 Secrets Manager
+- Capability to force rotation of secrets every X days : rotation을 x-day마다 돌릴 수 있다.
+- Integration with Amazon RDS (MySQL, PostgreSQL, Aurora) : RDS, redshift, documentdb 등의 **데이터베이스**를 사용할 때 권장되는 조합이다.
+- 그냥 AWS Secrets Manager 생성 시 유저 이름, 패스워드를 입력하고 원하는 데이터베이스를 고르면 키 관리 + 키 rotation을 알아서 해준다고 보면 된다.
+
+#130 AWS Shield
+- AWS Shield Standard
+  - Free service : 기본으로 세팅되면 무료
+  - Provides protection from attacks such as **SYN/UDP Floods**, **Reflection attacks** and other **layer 3/layer 4 attacks**
+  - 참고로 **SYN/UDP Floods**, **Reflection attacks**이 무엇인지는 설명하지 않았다. 출제범위가 아니기 때문이다.
+- AWS Shield Advanced
+  - $3,000 per month per organization로 굉장히 비싸다.
+  - DDoS 방어
+  - Protect against higher fees during usage spikes due to DDoS : 디도스로 인해 트래픽이 급격히 늘어나도 요금이 늘어나지 않는다.
+
+#131 CloudHSM
+- KMS => AWS manages the software for encryption : KMS가 소프트웨어 측면에서, aws가 직접 키를 관리한다면
+- CloudHSM => AWS provisions encryption hardware : CloudHSM는 하드웨어만 제공하고, 유저가 직접 키를 관리한다.
+- Dedicated Hardware : 전용 하드웨어
+- Supports both symmetric and asymmetric encryption (SSL/TLS keys)
+- No free tier available
+- **Must use the CloudHSM Client Software**
+- **Good option to use with SSE-C(고객 제공 암호화 키) encryption**
+- CloudHSM Software가 key와 user를 manage한다. 현재 공부한 바로는 KMS와의 차이점은 KMS는 키 로테이션을 AWS에서 해주지만 CloudHSM에서는 유저가 직접 해야 된다 이 정도 같다.
+- **CloudHSM – High Availability**
+  - Multi AZ
+  - 너무나 당연하게도 이렇게 중요한 보안키는 Highly available해야 하고 High durability를 가져야 하고, 역시 그런 특성을 지니고 있다.
+- CloudHSM vs KMS : 631p 필히 참고.
+
+#132 AWS WAF – Web Application Firewall
+- Protects your web applications from common web exploits(웹 취약점 공격 - 웹 설계 취약점 등)
+- Layer 7(HTTP) 에서 작동
+- **Application Load Balancer, API Gateway, CloudFront** : Layer 7에서 작동하므로 이 세가지에만 적용된다. 필히 기억.
+- **Web Access Control List** : 어떤 요청을 막을 것인지 rule을 설정하는 것이다. 아래는 rule을 설정해서 막을 수 있는 것들이다.
+  - Rules can include: IP addresses, HTTP headers, HTTP body, or URI strings
+  - Protects from common attack - **SQL injection and Cross-Site Scripting(XSS)**
+  - **geo-match(block countries)**
+  - Rate-based rules (to count occurrences of events) – **for DDoS protection**
+- **AWS Firewall Manager**
+  - Manage rules in all accounts of an AWS Organization : 한 organization의 waf rule, shield advanced, security group for ec2 & eni등을 관리한다.
+
+#133 Amazon GuardDuty
+- Intelligent Threat discovery to Protect AWS Account : 머신러닝을 사용하는 서비스로, 계정 내의 이상 징후를 감지한다.
+- GuardDuty로의 인풋이 가능한 것들 > 보통 비정상적인 것을 감지한다고 보면 된다.
+  - **CloudTrail Logs**: unusual API calls, unauthorized deployments 
+  - **VPC Flow Logs**: unusual internal traffic, unusual IP address
+  - **DNS Logs**: compromised(위협이 되는) EC2 instances sending encoded data within DNS queries
+- 당연히 CloudWatch Event로 이벤트를 발생시킬 수 있다.
+- Can **protect against CryptoCurrency attacks**(has a dedicated(전용) “finding” for it) : 암호화폐 공격 방어에 특화되어 있다.
