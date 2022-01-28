@@ -1123,3 +1123,26 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
   - **DNS Logs**: compromised(위협이 되는) EC2 instances sending encoded data within DNS queries
 - 당연히 CloudWatch Event로 이벤트를 발생시킬 수 있다.
 - Can **protect against CryptoCurrency attacks**(has a dedicated(전용) “finding” for it) : 암호화폐 공격 방어에 특화되어 있다.
+
+#134 Amazon Inspector
+- Automated Security Assessments for EC2 instances : **오직EC2를 위한** 보안 평가 자동화
+- OS위에 Inspector Agent를 설치해서 보안 취약점을 평가받을 수 있고, 분석이 끝나면 report를 받아볼 수 있다.
+- Analyze against unintended network accessibility, the running OS against known vulnerabilities : 의도하지 않은 네트워크 액세스, OS보안 취약점 분석
+- **For Network assessments(agentless)**
+  - Network Reachability : 네트워크 도달가능성
+- **For Host assessments(with agent)** 
+  - Common Vulnerabilities and Exposures : 보편적인 보안취약점 파악
+  - Center for Internet Security (CIS) Benchmarks(성능 측정을 목적으로 표준적인 테스트 실행)
+
+#135 Amazon Macie
+- Amazon Macie is a fully managed data security and data privacy service that uses **machine learning and pattern matching** to discover and protect your **sensitive data(PII : Personally identifiable information)** in AWS : s3 bucket을 분석해서 sensitive한 data가 존재한다면 notify가능
+
+#136 AWS Shared Responsibility Model
+- AWS responsibility - Security **of** the Cloud
+  - **Protecting infrastructure(hardware, software, facilities, and networking)** that runs all the AWS service : aws 서비스의 기반 관리는 당연히 aws의 책임이다. 하드웨어는 물론이고, 소비자가 사용하는 software에 이상이 생기면 안된다. 소프트웨어라 함은 바로 위에서 살펴본 macie를 예로 들면, 머신 러닝을 통해서 sensitive data를 파악하는데 sensitivee하지 않은 data를 sensitive하다고 판단하면 안될 것이므로 질적인 측면에서 aws는 기술의 발전에 힘써야 한다.
+- Customer responsibility - Security **in** the Cloud
+  - For EC2 instance, customer is responsible for management of the guest OS (including security patches and updates), firewall & networkconfiguration, IAM : EC2의 보안은 사용자가 직접 관리한다.
+  - Encrypting application data : 역시 encrypt할 것인지 말 지는 사용자가 관리한다. aws는 단순히 서비스만 제공해준다.
+- **Shared controls** : aws와 customer가 공유하는 책임
+  - Patch Management(버전 패치), Configuration Management(설정 관리), Awareness & Training
+- 645p 도형 필히 참고.
