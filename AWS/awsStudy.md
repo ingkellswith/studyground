@@ -1145,4 +1145,45 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
   - Encrypting application data : 역시 encrypt할 것인지 말 지는 사용자가 관리한다. aws는 단순히 서비스만 제공해준다.
 - **Shared controls** : aws와 customer가 공유하는 책임
   - Patch Management(버전 패치), Configuration Management(설정 관리), Awareness & Training
-- 645p 도형 필히 참고.
+- 645p 도형 참고.
+
+#137 VPC(Virtual Private Cloud)
+- **CIDR(Classless Inter-Domain Routing) – IPv4**
+  - 사이더라고 부르는 최신의 IP 주소 할당 방법.
+  - 기존 IP 주소 할당 방법인 네트워크 클래스를 대체했다.
+  - 보안 그룹 룰에서 사용하던 ip가 바로 이 CIDR이다.
+  - 기존 A,B,C,D,E클래스를 사용하던 것에 비해 사이더는 유연성을 더해준다.
+  - classful addressing vs CIDR(왜 CIDR이 classful에 비해서 좋은가) : https://www.practicalnetworking.net/stand-alone/classful-cidr-flsm-vlsm/
+- **Private IP(사설 IP) can only allow certain values** : 사설 IP는 특정 값만 할당하도록 IANA가 정한 규칙이 존재한다.
+  - 10.0.0.0 – 10.255.255.255 (10.0.0.0/8) > in big networks
+  - 172.16.0.0 – 172.31.255.255 (172.16.0.0/12) > **AWS default VPC** in that range
+  - 192.168.0.0 – 192.168.255.255 (192.168.0.0/16) > home networks
+  - 서브넷 마스크의 범위는 언제든지 바뀔 수 있다.
+  - 위 3가지를 제외한 나머지는 전부 공인 IP(Public IP)
+- **Default VPC**
+  - All new AWS accounts have a default VPC : 모든 aws 계정은 기본 VPC를 가진다.
+  - New EC2 instances are launched into the default VPC if no subnet is specified : 직접 만든 VPC가 없다면 새로운 EC2는 default VPC에 할당된다.
+  - Default VPC has Internet connectivity and all EC2 instances inside it have public IPv4 addresses : Default VPC는 기본적으로 인터넷에 연결에 가능하도록 설정되어 있어서, ec2 인스턴스는 인터넷의 모두가 알아볼 수 있는 공인 ip를 가진다. 즉 ec2 인스턴스를 생성했는데 보안그룹 포트를 22번으로 설정해주었을 때 ssh로 ec2에 접속가능했던 것이 인터넷이 연결되어 있기 때문이다. 인터넷이 연결되어 있지 않았다면 ec2인스턴스의 공인 ip를 찾을 수 없었을 것이다.
+  - We also get a public and a private IPv4 DNS names : 공인 ip, 사설 ip가 모두 할당된다.
+- **VPC Overview**
+  - You can have multiple VPCs in an AWS region(max 5 per region – soft limit) : 한 리전당 최대 5개(소프트 리밋)의 vpc를 가질 수 있다.
+  - Max CIDR per VPC is 5, for each CIDR : 위와 비슷하게 VPC당 CIDR을 최대 5개 할당 가능하다.
+    - CIDR의 subnet mask는 16부터 28까지이다.
+    - Min size is /28 (16 IP addresses) 
+    - Max size is /16 (65536 IP addresses)
+  - Because VPC is private, only the Private IPv4 ranges are allowed : VPC는 말 그대로 private하기 때문에 private ip만 할당 가능하다.
+  - Your VPC CIDR should NOT overlap with your other networks : 당연한 말이지만 CIDR은 다른 네트워크와 구별이 가능해야 하므로 다른 네트워크에 덮어씌우면 안된다.
+- **Subnet**
+  - AWS reserves 5 IP addresses (first 4 & last 1) in each subnet : aws vpc의 서브넷 내의 5개의 사설 ip는 예약된 ip로, ip를 할당할 때 사용할 수 없다.
+  - ex) 10.0.0.0, 10.0.0.1 - vpc router, 10.0.0.2 - mapping for dns, 10.0.0.3 - mapping for future use, 10.0.0.255 
+- **Internet Gateway(IGW)**
+  - VPC내부의 자원들을 인터넷에 연결해주는 역할
+  - It scales horizontally and is highly available and redundant : 고가용성, 용장성(일단 여유분 존재로 이해함)
+  - **Must be created separately from a VPC** : VPC와 따로 생성해야 한다!
+  - **One VPC can only be attached to one IGW and vice versa** : VPC와 IGW는 무조건 1:1매칭이다.
+- **Bastion Hosts**
+  - public subnet에는 IGW를 연결하면 인터넷에 접속가능했지만, private subnet은 상황이 다르다.
+  - private subnet에 IGW를 연결했을 때 인터넷이 된다면 'public' subnet이지 'private' subnet이 아니기 때문이다.
+  - public subnet과 private subnet은 인터넷을 이용하는 방법이 다르다. 그 방안으로 Bastion hosts를 사용한다.
+  - **The bastion is in the public subnet which is then connected to all other private subnets** : 강의 자료에서 설명한 bastion host는 VPC내부에 public subnet과 private subnet이 존재할 때, public subnet내부에 ec2 instance가 있고, 이 ec2 instance만 private subnet에 접근가능하다.
+  - **Bastion Host security group must be tightened** : bastion host에 접근하면 사실상 private subnet에 접근할 가능성이 생기는 것이므로, bastion host에 접근할 수 있는 보안 그룹은 tight하게 설정해야 한다.
