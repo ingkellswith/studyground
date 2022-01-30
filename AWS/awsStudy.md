@@ -1164,14 +1164,14 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
   - All new AWS accounts have a default VPC : 모든 aws 계정은 기본 VPC를 가진다.
   - New EC2 instances are launched into the default VPC if no subnet is specified : 직접 만든 VPC가 없다면 새로운 EC2는 default VPC에 할당된다.
   - Default VPC has Internet connectivity and all EC2 instances inside it have public IPv4 addresses : Default VPC는 기본적으로 인터넷에 연결에 가능하도록 설정되어 있어서, ec2 인스턴스는 인터넷의 모두가 알아볼 수 있는 공인 ip를 가진다. 즉 ec2 인스턴스를 생성했는데 보안그룹 포트를 22번으로 설정해주었을 때 ssh로 ec2에 접속가능했던 것이 인터넷이 연결되어 있기 때문이다. 인터넷이 연결되어 있지 않았다면 ec2인스턴스의 공인 ip를 찾을 수 없었을 것이다.
-  - We also get a public and a private IPv4 DNS names : 공인 ip, 사설 ip가 모두 할당된다.
+  - **We also get a public and a private IPv4 DNS names** : 공인 ip, 사설 ip가 모두 할당된다.
 - **VPC Overview**
   - You can have multiple VPCs in an AWS region(max 5 per region – soft limit) : 한 리전당 최대 5개(소프트 리밋)의 vpc를 가질 수 있다.
   - Max CIDR per VPC is 5, for each CIDR : 위와 비슷하게 VPC당 CIDR을 최대 5개 할당 가능하다.
     - CIDR의 subnet mask는 16부터 28까지이다.
     - Min size is /28 (16 IP addresses) 
     - Max size is /16 (65536 IP addresses)
-  - Because VPC is private, only the Private IPv4 ranges are allowed : VPC는 말 그대로 private하기 때문에 private ip만 할당 가능하다.
+  - Because VPC is private, only the Private IPv4 ranges are allowed : **VPC는 말 그대로 private하기 때문에 private ip**만 할당 가능하다.
   - Your VPC CIDR should NOT overlap with your other networks : 당연한 말이지만 CIDR은 다른 네트워크와 구별이 가능해야 하므로 다른 네트워크에 덮어씌우면 안된다.
 - **Subnet**
   - AWS reserves 5 IP addresses (first 4 & last 1) in each subnet : aws vpc의 서브넷 내의 5개의 사설 ip는 예약된 ip로, ip를 할당할 때 사용할 수 없다.
@@ -1182,8 +1182,83 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
   - **Must be created separately from a VPC** : VPC와 따로 생성해야 한다!
   - **One VPC can only be attached to one IGW and vice versa** : VPC와 IGW는 무조건 1:1매칭이다.
 - **Bastion Hosts**
-  - public subnet에는 IGW를 연결하면 인터넷에 접속가능했지만, private subnet은 상황이 다르다.
-  - private subnet에 IGW를 연결했을 때 인터넷이 된다면 'public' subnet이지 'private' subnet이 아니기 때문이다.
-  - public subnet과 private subnet은 인터넷을 이용하는 방법이 다르다. 그 방안으로 Bastion hosts를 사용한다.
+  - private subnet에 인터넷 연결이 아닌 ssh접속만을 원할 때 사용한다.
+  - private subnet에 인터넷을 연결하려면 NAT Instance or NAT Gateway를 사용해야 한다.
   - **The bastion is in the public subnet which is then connected to all other private subnets** : 강의 자료에서 설명한 bastion host는 VPC내부에 public subnet과 private subnet이 존재할 때, public subnet내부에 ec2 instance가 있고, 이 ec2 instance만 private subnet에 접근가능하다.
-  - **Bastion Host security group must be tightened** : bastion host에 접근하면 사실상 private subnet에 접근할 가능성이 생기는 것이므로, bastion host에 접근할 수 있는 보안 그룹은 tight하게 설정해야 한다.
+  - **Bastion Host security group must be tightened** : bastion host에 접근하면 사실상 private subnet에 접근할 가능성이 생기는 것이므로, bastion host에 접근할 수 있는 보안 그룹은 tight하게 설정해야 한다. **즉 22번 포트만 필요한 IP를 대상으로 열어놓는 것이 좋다.(시험)** 
+
+#138 Bastion Host Hands-on
+- public subnet의 instance(공인 IP 존재)에서 ssh로 private subnet의 인스턴스에 접속하는 것을 진행했다. private subnet에서 인터넷 사용 불가.
+
+#139 NAT Instance Hands-on
+- amazon nat instance ami를 사용해 NAT Instance를 만들고, 보안 그룹에 22 : SSH, 80 : HTTP(VPC CIDR), 443 : HTTPS(VPC CIDR), ICMP(VPC CIDR)를 허용한다.
+- Source / destination check disable
+- private subnet의 route table에 로컬 네트워킹을 제외한 나머지 destination은 NAT Instance를 향하게 설정
+- 이후, private subnet의 인스턴스에서 ping, curl등의 인터넷 사용이 가능함
+- 결론적으로 private subnet이 인터넷에 노출되지 않은 상태에서 NAT을 이용해 인터넷을 사용할 수 있음
+
+#140 Public Subnet vs Private Subnet
+- **강의 자료에는 없지만 따로 정리하는 것**
+- subnet을 만들 때 public으로 할지 private으로 할 지 선택란이 있는 것이 아니다.
+- 사용자가 이 서브넷은 public으로 할 것이고, 다른 서브넷은 private으로 할 것으로 직접 정하는 것이다. 그렇기에 네이밍이 중요하다.
+- 강의에서는 public subnet에 subnet옵션에서 auto-assign public ip를 활성화해서, 공인 ip를 자동할당했다. (아직 도메인 네임 설정을 하지 않았으므로 도메인 네임 존재 x)
+- 따라서 인터넷에서 public subnet에 auto assign된 ip로 이 서브넷을 알아볼 수 있고, public subnet또한 IGW, Route table을 통해서 인터넷에 액세스 할 수 있는 양방향의 통신이 가능해졌다.
+- 참고로 route table은 public subnet, private subnet에 한 개씩 따로 만들었다.
+
+#141 NAT Instance
+- Deprecated되었고, NAT Gateway의 하위호환이다.
+- **Not highly available**
+  - highly available하게 만드려면 asg를 multi-az에 만드는 등 추가적인 수고가 들어간다.
+- Internet traffic bandwidth depends on **EC2 instance type**
+- NAT = Network Address Translation
+- Allows EC2 instances in private subnets to connect to the Internet : public subnet이 아닌 private subnet이 인터넷에 접속 가능하도록 해준다.
+- **Must be launched in a public subnet** : public subnet의 internet gateway, route table을 사용할 것이기 때문이다.
+- **Must disable EC2 setting: Source / destination Check** : NAT이름에서도 볼 수 있듯 요청 간의 src, dest를 바꾸기 때문이다.
+- Must have **Elastic IP** attached to it : 고정 ip 주소를 가져야만 한다.
+- Route Tables must be configured to route traffic from private subnets to the NAT Instance : route table을 로컬 네트워킹할 경우가 아닌 경우 모든 트래픽을 NAT Instance를 바라보게 해야 한다.
+
+#142 NAT Gateway
+- AWS-managed NAT, higher bandwidth, high availability, no administration : 관리가 필요없는 데다가 **보안그룹 설정도 필요없다.**
+- **NATGW is created in a specific Availability Zone, uses an Elastic IP**
+- Can’t be used by EC2 instance in the same subnet (only from other subnets) : private subnet이 아닌 public subnet에 만들어야 한다.
+- **Requires an IGW** (Private Subnet => NATGW => IGW) : NAT 게이트웨이 역시 IGW를 사용한다.
+- 5 Gbps of bandwidth with automatic scaling up to 45 Gbps
+- **NAT Gateway is resilient within a single Availability Zone** : NAT Gateway는 싱글 AZ에 대해서만 회복 탄력성을 가진다.
+  - Must create multiple NAT Gateways in multiple AZs for fault-tolerance : fault-tolerance를 위해서는 multi az에 NAT Gateway를 만들어야 한다.
+  - There is no cross-AZ failover needed because if an AZ goes down it doesn't need NAT : 한 AZ가 다운되었다면 NAT가 필요 없다.
+
+#143 DNS Resolution in VPC
+- **DNS Support** : 이를 사용하면 Route 53 Resolver를 사용할 수 있기에 Custom DNS server를 따로 만들거나 사용할 필요가 없다.
+- **DNS Hostnames** : 이를 사용하면 private dns를 사용할 수 있다. 또한 private이기 때문에 도메인 네임을 구매할 필요가 없다.
+  - **VPC DNS Hostname을 활성화하면 public subnet에서 public ipv4을 보유하고 있던 인스턴스는 public ipv4 DNS도 갖게 된다.**
+- 위 두가지를 동시에 사용하면, Route 53 Resolver에 private 도메인 네임을 쿼리하면 private ip를 되돌려준다. 
+- **Route 53 Hosted Zone을 사용해 private domain name 사용하기**
+  - 1. VPC에서 enableDnsSupport & enableDnsHostname 활성화(안 해도 설정창에서 나중에 하게 됨)
+  - 2. Route 53 Hosted Zone 접속
+  - 3. 트래픽을 aws VPC에서 라우팅하는 Private Hosted Zone선택
+  - 4. Specific VPC 선택
+  - 5. 위에서 설정한 VPC를 사용하는 바스티온 호스트에 접속
+  - 6. Route53에 private domain name(ex. google.demo.internal)에 대해서 CNAME레코드의 값으로 www.google.com을 입력하면 www.google.com에 접속할 수 있다.(인터넷 게이트웨이 & Route table & NAT Gateway 활성화 상태)
+  - 7. 결론적으로 Route 53 Private Hosted Zone을 사용한다면 VPC안에서 private domain name을 사용할 수 있다. 인터넷 게이트웨이 & Route table & NAT Gateway 활성화 상태라면 private domain name과 public domain name을 동시에 사용할 수 있어서 굉장히 유용하다. (위에서 본 google.demo.internal(private domain name)과 www.google.com(public domain name)을 동시에 사용한 것이 그 예이다.)
+
+#144 Security Groups & NACLs
+- NACL : 요청 및 응답에 대해 Stateless하다. Stateless하다는 것은 상태가 없기 때문에 요청 및 응답은 항상 평가된다.
+- Security Group : 요청 및 응답에 대해 Stateful하다. Stateful하다는 것은 상태가 있기 때문에 요청 및 응답이 상태에 따라 평가된다. 따라서 Inbound가 허용되었다면 그에 따른 Outbound도 허용되고 vice versa이다.
+
+#145 Network Access Control List (NACL)
+- NACL are like a firewall which control traffic from and to subnets : 서브넷 방화벽과 같음
+- **One NACL per subnet, new subnets are assigned the Default NACL** : 서브넷과 NACL은 1:1 매핑이다.
+  - default NACL은 모든 요청과 응답을 허용한다.
+- **Newly created NACLs will deny everything**
+  - default가 아닌 커스텀 생성된 NACL은 기본 룰로 모든 요청과 응답을 deny한다.
+- NACL are a great way of blocking a specific IP address at the subnet level : 보안 그룹은 ec2 instance level
+
+#146 Ephemeral Ports
+- 응답이 요청된 ip의 포트에 전달되기 위해서 임시 포트를 사용하는데, 이것을 ephemeral port라고 부른다.
+- 677p 다이어그램 참고 : 임시 포트가 될 수 있는 모든 포트를 inbound, outbound rule에서 허용해줘야 한다.
+
+#147 Security Group vs NACLs
+- 679p 표 필히 참고
+
+#148 VPC – Reachability Analyzer
+- 
