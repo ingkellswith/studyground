@@ -1260,5 +1260,24 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 #147 Security Group vs NACLs
 - 679p 표 필히 참고
 
-#148 VPC – Reachability Analyzer
-- 
+#148 More On VPC
+- 679p 이후는 다이어그램, 예시를 보는 것이 편하다. VPC Section은 자료를 보자.
+
+#149 ClassicLink
+- ec2 classic은 현재 만들 수 없음 그냥 배경지식 classic link또한 과거의 ec2 classic 때문에 존재하는 것
+
+#150 VPC Endpoints & Private Link
+- VPC Endpoint와 VPC PrivateLink는 동일한 VPC Endpoint를 사용하는데, 차이점은 VPC PrivateLink는 네트워크 로드밸런서나 게이트웨이 로드밸런서를 사용한 커스텀 Endpoint Service를 만든 후 CreateVPCEndpoint에서 find service by name 해야하지만, VPC Endpoint는 커스텀 Endpoint Service를 만들 필요 없이
+CreateVPCEndpoint에서 AWS Service를 선택하고 원하는 Interface, Gateway를 고르면 된다.당연히 이를 사용하는 이유는 동일하게 전체 vpc를 노출하지 않고 원하는 서비스에 대해서만 노출하고 private network(aws network)를 사용해public network를 사용하고 싶지 않을 때 사용한다.
+
+#151 Direct Connect
+- **Direct Connect – Connection Types : Lead times are often longer than 1 month to establish a new connection** : 새로운 커넥션을 만드는데 1달 이상이 걸리므로 설계 이전에 인지하고 있어야 한다.
+
+#152 ECMP(Equal-cost multi-path routing) 
+- VPN to private virtual gateway : two tunnel은 하나의 forward, 하나의 backward로 동시에 이뤄질 수 없음
+- VPN to transit gateway : two tunnel은 두 개의 tunnel을 동시에 사용하므로 ecmp를 구현하고, increase bandwidth이며, 게이트웨이를 통해 전송된 gb만큼 pay함
+
+#153 Route Table
+- VPC Peering : route table로 어떤 private ip일 경우 어떻게 라우팅 될 것인지를 각 VPC의 라우팅 테이블마다 정해야 함. VPC Peering hands on 참고
+- VPC Endpoint Gateway : 또 하나 VPC Endpoint interface유형과 달리 VPC Endpoint Gateway는 라우트 테이블에 적용되기 때문에 어떤 subnet route table에 적용할 건지 선택해야 한다. ex. private subnet route table에 적용하면 route table에 자동으로 private link가 적용됨(s3, dynamoDB only)
+- VPC Endpoint interface유형은 특정 aws서비스를 선택한 후 VPC와 Subnet, security group을 설정해야 함
