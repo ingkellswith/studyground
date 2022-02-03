@@ -1281,3 +1281,25 @@ CreateVPCEndpoint에서 AWS Service를 선택하고 원하는 Interface, Gateway
 - VPC Peering : route table로 어떤 private ip일 경우 어떻게 라우팅 될 것인지를 각 VPC의 라우팅 테이블마다 정해야 함. VPC Peering hands on 참고
 - VPC Endpoint Gateway : 또 하나 VPC Endpoint interface유형과 달리 VPC Endpoint Gateway는 라우트 테이블에 적용되기 때문에 어떤 subnet route table에 적용할 건지 선택해야 한다. ex. private subnet route table에 적용하면 route table에 자동으로 private link가 적용됨(s3, dynamoDB only)
 - VPC Endpoint interface유형은 특정 aws서비스를 선택한 후 VPC와 Subnet, security group을 설정해야 함
+
+#154 RPO and RTO
+- RPO(Recovery Point Objective) : 쉽게 말하면 세이브 시점이다. 세이브 시점 이후에는 백업이 되지 않았으므로 세이브 시점부터 disaster발생 시점까지는 데이터 손실이 생긴다.
+- RTO(Recovery Time Objective) : Disaster발생 시점부터 RTO까지 걸린 시간이 **downtime**이다.
+
+#155 DMS – Database Migration Service
+- DMS는 Schema Conversion Tool(SCT)를 사용해서 스키마가 다른 db간의 마이그레이션도 지원한다.
+- 또한 Continuous Replication이 가능해서 실행중인 서비스의 db마이그레이션도 점진적으로 가능하다.
+
+#156 AWS DataSync
+- 많은 양의 데이터를 on-premise서버에서 aws로 옮기는 서비스
+- Amazon S3 (any storage classes – including Glacier), Amazon EFS, Amazon FSx for Windows 
+- Move data from your NAS or file system via NFS or SMB : NAS(Network Attached Service)로부터 NFS(Network File System) or SMB(Server Message Protocol)프로토콜을 사용해서 데이터를 전달한다.
+- Replication tasks can be scheduled hourly, daily, weekly : 실시간이 아닌 스케쥴링 서비스이다.
+- Leverage the DataSync agent to connect to your systems : on-premise 서버에 datasync agent가 설치되어 있어야 한다.
+
+#157 High Performance Computing(HPC)
+- **EC2 Enhanced Networking(SR-IOV)** : ENA를 사용함으로써 100 Gbps까지 네트워킹 속도를 올릴 수 있다.
+  - Elastic Network Adapter(ENA) up to 100 Gbps
+- **Elastic Fabric Adapter(EFA)** : ENA의 강화 버전인 EFA도 존재한다.
+  - Improved ENA for HPC, only works for Linux
+  - Great for inter-node communications, tightly coupled workloads
