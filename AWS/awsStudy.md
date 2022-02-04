@@ -1303,3 +1303,65 @@ CreateVPCEndpoint에서 AWS Service를 선택하고 원하는 Interface, Gateway
 - **Elastic Fabric Adapter(EFA)** : ENA의 강화 버전인 EFA도 존재한다.
   - Improved ENA for HPC, only works for Linux
   - Great for inter-node communications, tightly coupled workloads
+
+#158 CloudFormation
+- Terraform같은 Infrastructure as code
+- **Resources**: your AWS resources declared in the template(MANDATORY) : Cloudformation으로 코드를 작성할 때 resource는 필수적으로 적어야 한다는 의미이다.
+- **CloudFormation StackSets**
+  - 한 코드로 여러 계정, 여러 리전의 infrastruture를 제어할 수 있다.
+
+#159 AWS Step Functions
+- Build serverless visual workflow to orchestrate your Lambda functions : 다이어그램을 통해 workflow를 그리면, lambda function의 sequence를 만들 수 있게 된다. 한 마디로 람다 function의 순서 및 구성도를 보면서, 실제 진행상황을 관찰하며 실행을 할 수 있는 서비스이다.
+- AWS SWF(Simple Workflow Service)
+  - **AWS Step Functions이 권장되고 SWF는 deprecated버전이다.**
+  - 아래 두 경우일 경우에만 제외하고 모두 Step Function을 사용하면 된다.
+  - If you need external signals to intervene in the processes
+  - If you need child processes that return values to parent processes
+
+#160 Amazon EMR
+- EMR helps creating **Hadoop clusters(Big Data)** to analyze and process vast amount of data
+- The clusters can be made of hundreds of EC2 instances, Auto-scaling and integrated with Spot instances
+
+#161 AWS Opsworks
+- **Chef & Puppet** help you perform server configuration automatically, or repetitive actions : 서버 config 설정 자동화
+- Chef / Puppet have similarities with SSM / Beanstalk / CloudFormation but they’re **open-source tools that work cross-cloud** : Chef, Puppet은 오픈소스이기 때문에 특정 클라우드 업체에 국한되지 않고 사용 가능
+
+#162 AWS WorkSpaces
+- Managed, Secure Cloud Desktop : 관리형이자 보안강화형의 클라우드 데스크탑 서비스
+- Great to eliminate management of on-premise VDI(Virtual Desktop Infrastructure) : on-premise의 자원을 클라우드에서 사용하기 때문에 on-premise의 VDI를 제거할 수 있다고 표현한 것
+- On Demand, pay per by usage : 사용한 만큼 돈 지불
+- Microsoft Active Directory와 통합 가능
+
+#163 Cost Explorer 
+– **Savings Plan**존재
+
+#164 Well Architected Framework 5 Pillars
+- 1.**Operational Excellence** : Includes the ability to run and monitor systems to deliver business value and to continually improve supporting processes and procedures
+  - 동작 탁월성 : 비즈니스 가치를 실행하고 모니터링하며 이상이 없는지 관찰할 수 있어야 하며, 지속적으로 프로세스와 절차를 개선시켜나가야한다.
+- 2.**Security** : Includes the ability to protect information, systems, and assets while delivering business value through risk assessments and mitigation strategies
+  - 보안 : 비즈니스 가치를 전달함과 동시에 위험에 대한 평가를 실행하며, 위험 완화 전략을 세우고 정보, 시스템, 자원들을 보호할 수 있어야 한다.
+- 3.**Reliability** : Ability of a system to recover from infrastructure or service disruptions, dynamically acquire computing resources to meet demand, and mitigate disruptions such as misconfigurations or transient network issues
+  - 신뢰성 : 인프라나 서비스의 다운이 발생해도, 동적으로 컴퓨팅 리소스들을 수요에 맞게 공급해야 하며 설정 오류, 네트워크 지연과 같은 이슈들을 완화할 수 있어야 한다.
+- 4.**Performance Efficiency** : Includes the ability to use computing resources efficiently to meet system requirements, and to maintain that efficiency as demand changes and technologies evolve
+  - 퍼포먼스 효율성 : 시스템의 요구에 맞는 컴퓨팅 자원을 사용할 줄 알아야 하며, 그 자원들을 기술 진화에 따라 효율적으로 유지보수할 수 있어야 한다.
+- 5.**Cost Optimization** : Includes the ability to run systems to deliver business value at the lowest price point
+  - 가장 낮은 가격으로 비즈니스 가치를 전달할 줄 알아야 한다.
+- AWS Well-Architected Tool를 사용해서 위 질문에 대해 보완 가능(**AWS Well-Architected Tool** : 위 5가지 핵심 코어에 대한 질문들로 구성)
+- 응답 결과에 대한 리포트 제공, best practice 제공
+
+#165 Trusted Advisor
+- **High level AWS account assessment** : 얕은 레벨의 AWS 계정 평가, 분석 서비스
+- **5 Standards**
+  - Cost Optimization
+  - Performance
+  - Security
+  - Fault Tolerance
+  - Service Limits
+- **Core Checks and recommendations** – all customers : 모든 사용자가 코어 체크를 하거나 추천받을 수 있다.
+- Full Trusted Advisor – Available for Business & Enterprise support plans : Business & Enterprise의 유료 플랜을 사용하면 아래 기능을 사용할 수 있다.
+  - Ability to set CloudWatch alarms when reaching limits : limit도달 시 알람 제공
+  - Programmatic Access using AWS Support API : Trusted Advisor로의 Programmatic Access를 위한 api제공
+
+#166 More Architecture Link
+- https://aws.amazon.com/architecture/
+- https://aws.amazon.com/solutions/
