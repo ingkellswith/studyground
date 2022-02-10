@@ -138,6 +138,7 @@ SAA 문제 풀이 정리
 - HPC, fast storage
 - FSx for Lustre provides the ability to both process the 'hot data' in a parallel and distributed fashion as well as easily store the 'cold data' on Amazon S3
 - **FSx for Lustre integrates with Amazon S3**
+- 다른 서비스(ex. EFS에 비해 비싸다)
 
 #29 인스턴스 레벨의 액세스 제한
 - VPC security groups
@@ -154,3 +155,26 @@ SAA 문제 풀이 정리
 
 #31 EFS로의 region간 접근
 - The spreadsheet on the EFS file system can be accessed in other AWS regions by using an inter-region VPC peering connection
+
+#32 ec2 user data
+- ec2 user data는 최초 부팅 시에만 실행됨
+- ec2 user data는 default로 root 권한을 가짐
+
+#33 By default, an S3 object is owned by the AWS account that uploaded it. So the S3 bucket owner will not implicitly have access to the objects written by Redshift cluster : a계정이 b계정의 s3버켓에 파일을 업롣드하면 버켓을 소유한 b계정은 기본적으로 그 파일에 접근할 수 없다. 파일을 올린 계정이 아니기 때문이다.
+
+#34 IAM permission boundary. They can only be applied to roles or users, **not IAM groups**
+
+#35 ASG가 unhealthy instance를 terminate하지 않을 때
+- The health check grace period for the instance has not expired : grace period라고 terminate하지 않는 유예 기간이 있다.
+- The instance maybe in Impaired status - 손상된 status이면 recover할 시간을 주기 때문에 terminate하지 않는다.
+- The instance has failed the ELB health check status - By default, Amazon EC2 Auto Scaling doesn't use the results of ELB health checks to determine an instance's health status when the group's health check configuration is set to EC2 : 즉 asg는 기본적으로 elb health check보다 ec2 health check을 우선순위로 두기 때문에 elb health check이 fail하더라도 ec2 health는 정상일 수 있다는 것이다.
+
+#36 cognito user pool vs cognito identity pool
+- 둘 다 소셜 로그인, SAML을 지원한다.
+- **Cognito user pool**
+  - 애플리케이션에 회원가입, 로그인, 소셜 로그인 기능을 부착가능. 즉 앱을 사용할 때 인증을 위해서 사용한다.
+- **Cognito identity pool**
+  - Amazon S3 및 DynamoDB같은 aws 서비스에 액세스하기 위해 임시 자격 증명을 얻을 때 사용한다.
+
+#37 Use Cognito Authentication via Cognito User Pools for your Application Load Balancer
+- Use Cognito Authentication via Cognito User Pools for your CloudFront distribution : You cannot directly integrate Cognito User Pools with CloudFront distribution as you have to **create a separate Lambda@Edge** function to accomplish the authentication via Cognito User Pools. 
