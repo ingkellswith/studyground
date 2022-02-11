@@ -176,5 +176,31 @@ SAA 문제 풀이 정리
 - **Cognito identity pool**
   - Amazon S3 및 DynamoDB같은 aws 서비스에 액세스하기 위해 임시 자격 증명을 얻을 때 사용한다.
 
-#37 Use Cognito Authentication via Cognito User Pools for your Application Load Balancer
+#37 Use Cognito Authentication via Cognito User Pools for your Application Load Balancer : true
 - Use Cognito Authentication via Cognito User Pools for your CloudFront distribution : You cannot directly integrate Cognito User Pools with CloudFront distribution as you have to **create a separate Lambda@Edge** function to accomplish the authentication via Cognito User Pools. 
+
+#38 Kinesis
+- Kinesis firehose는 fully managed인데 비해 Kinesis Data Streams는 shard를 provision해야 한다.
+
+#39 Spot Fleet Request는 spot instance들을 요청하는 것이지 asg처럼 유동적으로 인스턴스를 terminate하고 create하는 것이 불가능하다.
+
+#40 video는 rds가 아닌 s3에 적합
+
+#41 **MAX I/O performance mode in EFS**
+- 지연 시간이 늘어나지만, 병렬화된 애플리케이션에 특화되고, 더 많은 throughput 지원
+
+#42 Kinesis firehose의 source를 kinesis data streams로 사용중이라면, kinesis agent는 kinesis firehose에 direct하게 데이터를 전달할 수 없다.
+- 따라서 이 경우 kinesis agent는 데이터를 kinesis data streams에 추가해야 한다.
+- 기본적으로 kinesis agent는 kinesis firehose, kinesis data streams에 데이터를 전달할 수 있다.
+
+#43 **can't move data directly from Snowball into a Glacier Vault or a Glacier Deep Archive Vault. You need to go through S3 first**
+- 스노우볼에서 glacier로 데이터를 옮기려면 먼저 s3로 옮긴 후 lifecycle로 옮기는 것이 일반적이다.
+
+#44 You can only use a **launch template** to provision capacity across multiple instance types using both On-Demand Instances and Spot Instances to achieve the desired scale, performance, and cost
+- launch template : versioning가능, provision capacity across multiple instance types using both On-Demand Instances and Spot Instances가능
+- launch configuration : 위 2가지 불가능
+
+#45 Create an encrypted snapshot of the database, share the snapshot, and allow access to the **AWS Key Management Service (AWS KMS) encryption key**
+- You can share the AWS Key Management Service (AWS KMS) customer master key (CMK) that was used to encrypt the snapshot with any accounts, that you want to be able to access the snapshot. You can share AWS KMS CMKs with another AWS account by adding the other account to the AWS KMS key policy.
+- CMK에 대한 액세스는 여러 계정 간에 공유하는 것도 가능하다.
+- Making an encrypted snapshot of the database by CMK will give the auditor a copy of the database 왜냐하면 AWS KMS key policy를 바꿔서 키에 대한 접근 권한을 공유했기 때문이다.
