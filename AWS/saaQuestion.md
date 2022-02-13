@@ -30,7 +30,7 @@ SAA 문제 풀이 정리
 
 #5. EBS volumes
 - io2 Block Express : 256,000IOPS
-- io2 : max 64,000IOPS, size는 4GiB to 16TiB
+- io2 : max 64,000IOPS for nitro(nitro가 아닌 것은 최대 32,000IOPS), size는 4GiB to 16TiB
 - io1/2만 multi-attach가능 gp는 불가능
 
 #6. SQS Batch
@@ -135,10 +135,11 @@ SAA 문제 풀이 정리
 - WAF를 사용하면 cloudfront가 edge레벨(doesn't belong to VPC)에서 geo restriction하는 것과 달리 VPC - ALB레벨에서 geo match 화이트리스트, 블랙리스트를 사용할 수 있다.
 
 #28 FSx For Lustre(실전테스트1 - 52)
-- HPC, fast storage
+- HPC, fast storage : FSx For Lustre는 고성능 파일 시스템이다.
 - FSx for Lustre provides the ability to both process the 'hot data' in a parallel and distributed fashion as well as easily store the 'cold data' on Amazon S3
 - **FSx for Lustre integrates with Amazon S3**
 - 다른 서비스(ex. EFS에 비해 비싸다)
+- 컴퓨팅 파워만큼 빠른 스토리지 성능을 위해서 사용
 
 #29 인스턴스 레벨의 액세스 제한
 - VPC security groups
@@ -204,3 +205,100 @@ SAA 문제 풀이 정리
 - You can share the AWS Key Management Service (AWS KMS) customer master key (CMK) that was used to encrypt the snapshot with any accounts, that you want to be able to access the snapshot. You can share AWS KMS CMKs with another AWS account by adding the other account to the AWS KMS key policy.
 - CMK에 대한 액세스는 여러 계정 간에 공유하는 것도 가능하다.
 - Making an encrypted snapshot of the database by CMK will give the auditor a copy of the database 왜냐하면 AWS KMS key policy를 바꿔서 키에 대한 접근 권한을 공유했기 때문이다.
+
+#46 "aws:RequestedRegion": "eu-west-1"은 api call이 만들어진 곳 기준이 아니라, **instance가 어느 리전에 존재하는지**를 기준으로 한다.
+
+- 아래는 policy이다.
+```text
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Mystery Policy",
+      "Action": [
+        "ec2:RunInstances"
+      ],
+      "Effect": "Allow",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    }
+  ]
+}
+```
+
+#47 블루 그린 배포를 하는데 DNS캐싱이 발생할 경우, Global Accelerator가 dns 캐싱을 해결해 줄 수 있다.
+- Use AWS Global Accelerator(**multi-Region solution**) to distribute a portion of traffic to a particular deployment
+- "AWS Global Accelerator를 사용하면 클라이언트 디바이스와 인터넷 리졸버에서 DNS 캐싱에 종속되지 않고 트래픽을 점진적으로 또는 모두 한 번에 이동할 수 있으며, 트래픽 다이얼 및 끝점 가중치 변경은 몇 초 내에 적용됩니다."
+
+#48 Secrets manager는 변수 자동 로테이션 기능을 지원하지만, SSM Paramter Store는 자동 로테이션 기능을 지원하지 않고, 수동으로 돌려야 한다.
+
+#49 
+- A developer needs to implement a Lambda function in AWS account A that accesses an Amazon S3 bucket in AWS account B.
+- 위 상황에 필요한 두 가지 설정은 아래와 같다.
+- S3 버킷에 액세스할 수 있는 람다 기능에 대한 IAM 역할을 만든다. 
+- **IAM 역할을 람다 기능의 실행 역할**로 설정합니다. 
+- **버킷 정책이 람다 함수의 실행 역할에 대한 액세스 권한도 부여**해야 한다.
+
+#50 Instance가 종료된 후에도 EBS Volume을 유지하는 방법
+- Set the DeleteOnTermination attribute to false
+- 위와 달리 **ec2 hibernate는 in-memory state를 유지하게 한다.** : hibernate를 사용하면 in-memory의 내용을 ebs에 저장하기 때문에 가능한 것이다.
+
+#51 SQS에서 group id를 사용하지 않으면 consumer는 only one이다.
+
+#52 Kinesis Data Streams에 비해 SQS FIFO는 consumers를 늘리기 효율적이다(한 SQS에 최대 100개의 consumer).
+
+#53 **IAM** Account level, User level 액세스 권한
+- https://docs.aws.amazon.com/ko_kr/IAM/latest/UserGuide/tutorial_cross-account-with-roles.html(IAM 역할을 사용한 AWS 계정 간 액세스 권한 위임) 참고
+- 위 문서를 읽어보면 계정 간 권한 위임을 IAM Policy를 사용한다.(AssumeRole, Security Token Service)
+
+#54 **S3** Account level, User level 액세스 권한
+
+|TYPE|Account Level|User Level|
+|------|---|---|
+|IAM Policies|No|Yes|
+|ACLs|Yes|No|
+|Bucket Policies|Yes|Yes|
+
+- **Bucket Polices는 ip를 기준**으로도 제한 가능
+
+#55 Elastic Load Balancing does not work across regions : ELB는 한 리전에 국한된 서비스이다.
+
+#56
+- Does S3 bucket policy override IAM policy? : S3 bucket policy가 iam policy를 무시하고 덮어씌우는 것이 가능한가?
+- Yes it can indeed override the policy, but only where it uses a Deny. If it includes an Allow but the IAM policy includes a Deny this will not evaluate as Allow. : deny에 한해서 가능하다. iam policy가 deny인데 bucket policy가 allow한다고해서 override되지 않는다.
+
+#57 storage gateway는 on-premise및 cloud의 하이브리드 환경을 사용하는 사내에 **데이터를 캐싱**하는 기능도 한다.
+
+#58 PostgreSQL의 기본 포트는 5432이다.
+
+#59 Batch job은 spot instance가 비용면에서 최적화되어 있다.
+
+#60 Partition placement group은 Hadoop, 카산드라, 카프카 같은 대규모 데이터 분산 작업에 사용된다.
+
+#61 ASG Default Termination Policy
+- 1순위로 제일 먼저 terminate되는 대상 : 오래된 launch configuration
+- 2순위로 terminate되는 대상 : 오래된 launch template
+- 3순위로 terminate되는 대상 : closest to next billing hour - 이는 시간 단위로 청구되는 linux, ubuntu ec2 usage cost를 줄여준다.
+
+#62 CloudFormation은 리소스를 프로비저닝하는 데 시간이 걸리기 때문에 특정 사용 사례에 최소량의 다운타임이 필요한 경우에는 적절한 솔루션이 아니다.
+
+#63 Reserved Instance vs Spot Instance
+- Reserved Instance는 지속적인 사용에 효율적
+- Spot Instance는 monthly work에 효율적
+- Spot Instances are well-suited for **data analysis, batch jobs, background processing, and optional tasks**
+- Amazon EC2 needs the capacity back일 때, Spot instance가 종료될 수 있는데 이 때 공식문서에서는, "Amazon EC2 automatically resubmits a persistent Spot Instance request after the Spot Instance associated with the request is terminated"라고 말하며 다른 spot instance를 자동으로 요청한다.
+- 즉 **Amazon EC2 needs the capacity back 또는 Spot price exceeds the maximum price for your request일 때 spot instance는 terminate**된다.
+
+#64 Dedicated Host는 Dedicated Instance에 비해 cost가 많이 들어 cost-effective하지 않다.
+
+#65 실전 테스트 2 - 63번 bucket policy 문제 있음
+
+#66 Shared Service VPC
+- 실전 테스트 2 - 65번
+- 한 회사가 AWS 계정을 여러 개 운영하고 있으며 AWS Transit Gateway를 사용하여 허브 앤 스포크 방식으로 이들 계정을 상호 연결했습니다. 네트워크 분리를 용이하게 하기 위해 이러한 AWS 계정 전체에 VPC가 프로비저닝되었습니다. VPC의 워크로드에 필요한 서비스에 대한 공유 액세스를 제공하면서 **관리 오버헤드와 비용**을 모두 줄일 수 있는 솔루션은 무엇입니까?
+- Sharing resources from a central location instead of building them in each VPC may reduce administrative overhead and cost : 각 vpc에서 자원을 만들어 공유하는 것이 아니라 Shared Service VPC를 만들어 사용한다.
+- https://aws.amazon.com/ko/blogs/architecture/reduce-cost-and-increase-security-with-amazon-vpc-endpoints/(Amazon VPC 엔드포인트로 비용 절감 및 보안 강화)
