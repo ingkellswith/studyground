@@ -302,3 +302,30 @@ SAA 문제 풀이 정리
 - 한 회사가 AWS 계정을 여러 개 운영하고 있으며 AWS Transit Gateway를 사용하여 허브 앤 스포크 방식으로 이들 계정을 상호 연결했습니다. 네트워크 분리를 용이하게 하기 위해 이러한 AWS 계정 전체에 VPC가 프로비저닝되었습니다. VPC의 워크로드에 필요한 서비스에 대한 공유 액세스를 제공하면서 **관리 오버헤드와 비용**을 모두 줄일 수 있는 솔루션은 무엇입니까?
 - Sharing resources from a central location instead of building them in each VPC may reduce administrative overhead and cost : 각 vpc에서 자원을 만들어 공유하는 것이 아니라 Shared Service VPC를 만들어 사용한다.
 - https://aws.amazon.com/ko/blogs/architecture/reduce-cost-and-increase-security-with-amazon-vpc-endpoints/(Amazon VPC 엔드포인트로 비용 절감 및 보안 강화)
+
+#67 When you publish a high-resolution metric, CloudWatch stores it with a resolution of 1 second, and you can read and retrieve it with a period of 1 second, 5 seconds, 10 seconds, 30 seconds, or any multiple of 60 seconds : high-resolution metric을 사용하면 1초 간격으로 쌓고, 1~60초 간격으로 retreive할 수 있다.
+
+#68 EC2 Detailed Monitoring은 1분 간격으로 metric 모니터링 가능
+
+#69 Endpoint on Route 53 Resolver
+- Create an inbound endpoint on Route 53 Resolver and then DNS resolvers on the on-premises network can forward DNS queries to Route 53 Resolver via this endpoint : Route 53 Resolver의 인바운드 엔드포인트는 온프레미스의 DNS resolver가 Route 53 Resolver에 쿼리를 요청할 수 있게 한다.
+- Create an outbound endpoint on Route 53 Resolver and then Route 53 Resolver can conditionally forward queries to resolvers on the on-premises network via this endpoint : Route 53 Resolver의 아웃바운드 엔드포인트는 조건적으로 온프레미스 네트워크의 DNS resolver에 쿼리를 요청할 수 있게 한다.
+- inbound endpoint 방향 : on-premises DNS resolvers > Route 53 Resolver
+- outbound endpoint 방향 : Route 53 Resolver > on-premises DNS resolvers
+- 참고로, dns resolver가 dns server로 쿼리를 보내 응답을 요청하는데 dns resolver > local dns server > (root dns server, tld dns server, sld dns server) 이 순서로 요청이 이루어진다고 보면 된다.
+
+#70 Aurora Global Database
+- Short Recovery Time(RTO)에 특화
+- Managed planned failover – 자동으로 failover를 실행
+- Unplanned failover - 직접 failover실행하기 때문에 RTO가 길어질 수 있음
+
+#71 AWS Elastic Beanstalk
+- **full control** over the AWS resources powering your application and **can access the underlying resources** at any time
+
+#72 Dedicated Hosts enable you to use your existing server-bound software licenses like **Windows Server and address corporate compliance and regulatory requirements** : dedicated host는 dedicated instance와 달리 온프레미스 서버의 소프트웨어 라이센스를 dedicated host에 똑같이 적용시킬 수 있다.
+
+#73 Configure an Amazon CloudWatch alarm that triggers the recovery of the EC2 instance, in case the instance fails. **The instance can be only configured with EBS volume** - The recover action is supported only on instances that have EBS volumes configured on them, instance store volumes are not supported for automatic recovery by CloudWatch alarms. : ebs가 아닌 instance store를 사용하는 경우 자동 복구를 지원하지 않는다.
+
+#74 ALB와 EC2 Instances를 사용하는데 너무 많은 ALB사용으로 구조가 복잡해졌을 경우
+- The architecture has now become complex with too many ALBs in multiple AWS Regions. Security updates, firewall configurations, and traffic routing logic have become complex with **too many IP addresses and configurations**.
+- 해결책 : Launch AWS Global Accelerator and create endpoints for all the Regions. Register the ALBs of each Region to the corresponding endpoints
