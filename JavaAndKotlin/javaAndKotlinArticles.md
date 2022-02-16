@@ -21,4 +21,8 @@ Java And Kotlin Articles
 [2. 코틀린 제네릭, in? out? ](https://medium.com/mj-studio/%EC%BD%94%ED%8B%80%EB%A6%B0-%EC%A0%9C%EB%84%A4%EB%A6%AD-in-out-3b809869610e)  
 
 - 코루틴(CoRoutine)  
-[코틀린 코루틴(coroutine) 개념 익히기](https://wooooooak.github.io/kotlin/2019/08/25/%EC%BD%94%ED%8B%80%EB%A6%B0-%EC%BD%94%EB%A3%A8%ED%8B%B4-%EA%B0%9C%EB%85%90-%EC%9D%B5%ED%9E%88%EA%B8%B0/)  
+[1. 코틀린 코루틴(coroutine) 개념 익히기](https://wooooooak.github.io/kotlin/2019/08/25/%EC%BD%94%ED%8B%80%EB%A6%B0-%EC%BD%94%EB%A3%A8%ED%8B%B4-%EA%B0%9C%EB%85%90-%EC%9D%B5%ED%9E%88%EA%B8%B0/)  
+
+- 스킬 향상
+[1. 자바의 추상 클래스와 인터페이스](https://brunch.co.kr/@kd4/6)
+[2. JVM과 JIT컴파일러란](https://catch-me-java.tistory.com/11)

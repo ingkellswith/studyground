@@ -7,6 +7,7 @@
 [@SpyBean @MockBean 의도적으로 사용하지 않기](https://jojoldu.tistory.com/320)
 [Spring @Mock, @Mockbean, @InjectMock](http://blog.devenjoy.com/?p=529)
 [Mockito @Mock @MockBean @Spy @SpyBean 차이점 정리](https://cobbybb.tistory.com/16)
+[Test Double을 알아보자](https://tecoble.techcourse.co.kr/post/2020-09-19-what-is-test-double/)
 
 # 권장 사용 라이브러리
 Java : Junit, AssertJ, Mockito

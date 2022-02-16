@@ -20,3 +20,7 @@ Spring Articles
 
 - Intellij
 [1. IntelliJ 디버깅 해보기](https://jojoldu.tistory.com/149)
+
+- jpa에서의 Insert or update
+[1. [JPA] JPA를 적용하며.. ( insert, update 분기 편 )](https://jessyt.tistory.com/42)
+[2. 스프링 데이터 JPA - 새로운 Entity 판별](https://jaime-note.tistory.com/65)
