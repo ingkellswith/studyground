@@ -114,6 +114,8 @@ SAA 문제 풀이 정리
 - **S3 objects as files and does not allow** you to write changed data back to S3.
 - **user quotas, end-user file restore**
 - AWS Managed Microsoft AD, FSx for Lustre는 DFS를 support하지 않는다.
+- Amazon FSx는 온프레미스 Microsoft Active Directory 및 AWS Microsoft Managed AD와 통합된다.
+- AWS DataSync를 통한 간단하고 원활한 마이그레이션 : **AWS DataSync**를 사용하면 온 프레미스 파일 시스템을 Amazon FSx의 완전 관리형 Windows 스토리지로 쉽게 이동할 수 있다. AWS DataSync와의 통합은 인터넷 또는 **AWS Direct Connect**를 사용하면 데이터 복사를 자동화 및 가속화할 수 있다. 또한 It is natively integrated with Amazon S3, Amazon EFS, Amazon FSx for Windows File Server, Amazon CloudWatch, and AWS CloudTrail.
 
 #22. AMI는 ebs snapshot이 베이스이다.
 - 따라서 리전 간 ami copy시 복사할 리전에는 AMI, EBS Snapshot 2개가 생성된다.
@@ -328,4 +330,81 @@ SAA 문제 풀이 정리
 
 #74 ALB와 EC2 Instances를 사용하는데 너무 많은 ALB사용으로 구조가 복잡해졌을 경우
 - The architecture has now become complex with too many ALBs in multiple AWS Regions. Security updates, firewall configurations, and traffic routing logic have become complex with **too many IP addresses and configurations**.
-- 해결책 : Launch AWS Global Accelerator and create endpoints for all the Regions. Register the ALBs of each Region to the corresponding endpoints
+- **해결책** : Launch AWS Global Accelerator and create endpoints for all the Regions. Register the ALBs of each Region to the corresponding endpoints
+
+#75 ALB, ASG 에는 elastic ip를 할당할 수 없다.
+
+#76 실전 테스트 3 - 11번
+- ASG로 SQS의 큐를 받아 사용하는 아키텍처가 있는데, a sudden spike in orders received를 어떻게 감당할 것인가  
+- Use a target tracking scaling policy based on a custom Amazon SQS queue metric.   
+- 하지만 **NumberOfMessages를 SQS metric**으로 설정한다면, sqs의 메시지의 수가 변경될 때, asg를 scaling하는 방식은, 큐의 메시지 수가 큐에서 메시지를 처리하는 자동 스케일링 그룹의 크기에 비례하여 변경되지 않도록 하는 문제가 발생할 수 있다. 이를 해석하자면, 메시지 수에 따라서 asg가 스케일링되는 것이 기술적으로 완벽히 비례하기가 쉽지 않은 것 같다고 판단된다.
+- target tracking policy로 **A backlog per instance metric**를 SQS metric으로 설정하면 해결할 수 있다..
+- NumberOfMessages : 1500
+- fleet's running capacity : 10 ec2
+- 개별 ec2가 초당 100개의 message를 처리한다고 가정할 때.
+- 500개의 메시지를 추가적으로 처리하기 위해서, ec2는 5개가 추가적으로 scaling된다.
+
+#77 AZ ID
+- 예를 들어, 한 AWS 계정의 가용성 영역 us-west-2a는 다른 AWS 계정의 us-west-2a와 동일한 위치가 아닐 수 있다.
+- 따라서 위 상황에서 완벽히 같은 az를 정의하기 위해서는 usw2-az2같이 us-west-2a의 az id를 사용해야 한다.
+
+#78 NAT Gateway vs NAT Instance
+- NAT Instance만 port forwarding, security group, bastion host로 사용가능하고 NAT Gateway는 이 3개 전부 다 불가능하다. 
+
+#79 You cannot use delay queues to postpone the delivery of only certain messages to the queue by one minute
+- **딜레이 큐**는 전체적인 큐에 적용가능하지만 **특정 메시지에만 적용할 수는 없다**.
+- 특정 메시지에만 적용하려면, **메시지 타이머**를 이용해야 한다.
+
+#80 AWS Cloudtrail vs AWS Config vs AWS Systems Manager
+- AWS Config : AWS 리소스 구성 기록 및 평가 > **resource-specific history, audit, and compliance**
+  - AWS Config는 구성 기록을 제공하기 위해 **AWS 리소스에 대한 변경 세부 정보**를 기록한다. AWS Management 콘솔, API 또는 CLI를 사용하여 **과거 어느 시점에서든 리소스 구성이 어떻게 생겼는지**에 대한 세부 정보를 얻을 수 있습니다.
+- AWS Cloudtrail : 사용자 활동 및 API 사용 추적 > **account-specific activity and audit**
+  - AWS CloudTrail은 감사, 보안 모니터링 및 운영 문제 해결을 지원한다. CloudTrail은 AWS 서비스 전반의 **AWS 사용자 활동 및 API 사용량**을 이벤트로 기록한다. CloudTrail 이벤트는 **"누가 무엇을, 어디서, 언제 했습니까?"라는 질문**에 답하는 데 도움이 된다.
+  - CloudTrail은 두 가지 유형의 이벤트를 기록합니다. S3 **버킷 생성 또는 삭제**와 같은 리소스에 대한 제어 플레인 작업을 캡처하는 **관리 이벤트**
+  - S3 객체 읽기 또는 쓰기와 같은 리소스 내 데이터 플레인 작업을 캡처하는 **데이터 이벤트**
+- AWS Systems Manager : AWS 및 온프레미스 리소스에 대한 운영 인사이트 확보 : **리소스 그룹, 중앙집중화, aws리소스 관리의 중심화**
+
+#81 AWS Transfer Family
+- AWS Transfer Family는 SFTP, FTPS 및 FTP를 통해 Amazon S3 및 Amazon EFS 안팎으로 직접 파일을 전송할 수 있도록 완전관리형 지원을 제공한다.
+- 반복적인 비즈니스 간 파일 전송에 사용
+- **Windows 파일 서버용 Amazon FSX는 지원하지 않는다.**
+
+#82 AWS Storage Gateway
+- 온프레미스에서 무제한의 클라우드 스토리지에 액세스할 수 있게 해주는 하이브리드 클라우드 스토리지 서비스
+- **s3, fsx for windows file server에 접근, 백업을 클라우드로 이동하고, 클라우드 스토리지에서 지원되는 온프레미스 파일 공유를 사용도 포함**
+
+#83 AMI
+- You can copy both Amazon EBS-backed AMIs and instance-store-backed AMIs.
+- You can share an AMI with another AWS account
+  - To copy an AMI that was shared with you from another account, the owner of the source AMI must grant you read permissions for the storage that backs the AMI, either the associated EBS snapshot (for an Amazon EBS-backed AMI) or an associated S3 bucket (for an instance store-backed AMI).
+- Copying an AMI backed by an encrypted snapshot cannot result in an unencrypted target snapshot
+- 아래는 ami copy 시나리오이다. Amazon EBS-backed AMI에 대해서만 적용되고, instance store-backed AMI는 encryption status에만 적용되기 때문에 encrypted status를 바꿀 수 없다.
+
+|Scenario|Description|Supported|
+|------|---|---|
+|1|Unencrypted-to-unencrypted|Yes|
+|2|Encrypted-to-encrypted|Yes|
+|3|Unencrypted-to-encrypted|Yes|
+|4|Encrypted-to-unencrypted|No|
+
+#84 Tenancy of instance
+- You can change the tenancy of an instance from dedicated to host
+- You can change the tenancy of an instance from host to dedicated
+- dedicated와 default, host와 default 간의 변경은 불가능하다.
+
+#85 아키텍처
+- 마이크로서비스 중 어떤 서비스는 빠르게 실행되고, 어떤 서비스는 느리게 실행되면 decoupling을 검토해야 한다.
+
+#86 Cloudhub
+- Vpc에 virtual private gateway를 두고, vpc환경과 on-premise환경을 연결한다.
+- hub and spoke모델로 vpc와 온프레미스 끼리 자유롭게 연결할 수 있다.
+
+#87 
+- A recovered instance is identical to the original instance, including the instance ID, private IP addresses, Elastic IP addresses, and all instance metadata : 복구된 인스턴스는 기존 인스턴스와 instance ID, private IP addresses, Elastic IP addresses, and all instance metadata가 같다.
+- If your instance has a public IPv4 address, it retains the public IPv4 address after recovery
+
+#88 Amazon EC2 Auto Scaling chooses the policy that provides the largest capacity : 두 정책이 충돌하면 가장 큰 capacity를 우선해서 동작한다.
+
+#89 Step Function vs Simple WorkFlow Service
+- Step Function **JSON으로 상태 시스템을 정의**한다.
+- Simple WorkFlow Service : 프로그래밍 언어로 **Decider 프로그램**을 작성하거나 Flow Framework를 통해 동기식 상호 작용을 구성하는 프로그래밍 구문을 작성
