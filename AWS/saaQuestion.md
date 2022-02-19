@@ -408,3 +408,79 @@ SAA 문제 풀이 정리
 #89 Step Function vs Simple WorkFlow Service
 - Step Function **JSON으로 상태 시스템을 정의**한다.
 - Simple WorkFlow Service : 프로그래밍 언어로 **Decider 프로그램**을 작성하거나 Flow Framework를 통해 동기식 상호 작용을 구성하는 프로그래밍 구문을 작성
+
+#90 아키텍처
+- With a sharp increase in the number of users, the system has become slow and sometimes even unresponsive as it does not have a retry mechanism
+- 사용자 수가 급증하면서 재시도 메커니즘이 없어, 시스템이 느려지고 때로는 반응이 없는 경우도 있었다.
+- 해결책 : Use Amazon Kinesis Data Streams to ingest the data, process it using AWS Lambda or run analytics using Kinesis Data Analytics
+
+#91 
+- Amazon EFS uses the Network File System protocol. EFS does not support SMB protocol.
+- Amazon FSx for Windows File Server, File Gateway Configuration of AWS Storage Gateway support SMB Protocol.
+
+#92 Spot Instance
+- If the request is persistent and you stop your Spot Instance, the request only opens after you start your Spot Instance.
+- If a spot request is persistent, then it is opened again after your Spot Instance is interrupted
+
+#93 Use Amazon GuardDuty to monitor any **malicious activity** on data stored in S3. Use Amazon Macie to identify any **sensitive data** stored on S3
+
+#94 SCP(Service Control Policies)
+- SCP must have an explicit Allow (does not allow anything by default)
+- Does not apply to the **Master Account**
+- SCP is applied to all the Users and Roles of the Account, **including Root user**
+- Master Account에는 적용이 되지 않지만, 루트 유저는 적용이 된다는 점 주의
+- The SCP does not affect service-linked roles : SCP와 service-linked roles는 관련이 없다.
+
+#95 서버리스 아키텍처
+- Host the static content on Amazon S3 and use Lambda with DynamoDB for the serverless web application that handles dynamic content. Amazon CloudFront will sit in front of Lambda for distribution across diverse regions
+
+#96 Weekly Job for 5 minutes이 필요한 경우 사용가능한 아키텍처
+- Schedule a weekly CloudWatch event cron expression to invoke a Lambda function that runs the database rollover job
+
+#97 Route 53 alias vs cname
+- You should also note that Route 53 **doesn't charge for alias queries** to AWS resources but Route 53 does **charge for CNAME queries**
+- Additionally, an alias record **can only redirect queries to selected AWS resources** such as S3 buckets, CloudFront distributions, and another record in the same Route 53 hosted zone. : alias record는 aws resource만을 대상으로 한다.
+- However a CNAME record can redirect DNS queries to any DNS record. So, you can create a CNAME record that redirects queries from app.covid19survey.com to app.covid19survey.net.
+
+#98 Internet Gateway 
+- An Internet Gateway serves two purposes
+  - provide a target in your VPC route tables for internet-routable traffic
+  - perform **network address translation(NAT) for instances that have been assigned public IPv4 addresses**
+
+#99 NLB
+- Traffic is routed to instances using the primary private IP address specified in the primary network interface for the instance
+
+#100 DMS 사용 예시
+- Use AWS Database Migration Service to replicate the data from the databases into Amazon Redshift
+
+#101 Elastic Fabric Adapter - HPC
+- **An Elastic Fabric Adapter(EFA)** is a network device that **you can attach** to your Amazon EC2 instance to accelerate High Performance Computing (HPC) and machine learning applications
+
+#102 VPC
+- Using VPC sharing, an account that owns the VPC(owner) shares **one or more subnets with other accounts**(participants) that belong to the same organization from AWS Organizations. **The owner account cannot share the VPC itself.** : 오너 계정은 VPC 자체를 공유할 수 없다.
+- Use VPC sharing to share one or more subnets with other AWS accounts belonging to the same parent organization from AWS Organizations : VPC Sharing은 vpc 자체를 공유하는 것이 아니라 vpc 서브넷을 공유하는 것이다.
+- 또한 VPC sharing은 owner 계정에서 subnet을 관리하고 이 서브넷을 공유하는 것이기 때문에 중앙관리가 된다는 장점이 있다.
+
+#103 Global Accelerator
+- AWS Global Accelerator is a networking service that helps you improve **the availability and performance of the applications** that you offer to your global users. : **애플리케이션의 네트워크 성능 향상에 효과적임**
+- **It provides static IP addresses that provide a fixed entry point** to your applications and eliminate the complexity of managing specific IP addresses for different AWS Regions and Availability Zones. 
+- AWS Global Accelerator always routes user traffic to the optimal endpoint. 
+- Global Accelerator is a good fit for non-HTTP use cases, such as **gaming(UDP), IoT(MQTT), or Voice over IP**.
+
+#104 CloudFront
+- CloudFront supports HTTP/RTMP protocol based requests.
+- **CloudFront do not support UDP.**
+- **CloudFront points of presence(POPs)** : CloudFront also has regional edge caches that bring more of your content closer to your viewers, **even when the content is not popular enough to stay at a POP**, to help improve performance for that content. 
+- Regional edge caches help with all types of content, particularly content that tends to become less popular over time. : 자주 접근되지 않는 static 자원에 대해서도 지원한다.
+- Examples include user-generated content, such as video, photos, or artwork, e-commerce assets such as product photos and videos; and news and event-related content that might suddenly find new popularity. : 유저 제작 비디오, 사진, 아트워크 등 모두 지원을 Cloudfront에서 모두 지원
+- **Cloudfront는 1GB 미만인 static 자원을 캐시하기 적합하다. 1GB 이상인 자원에 대해서는 S3 Transfer Acceleration(Cloudfront와 마찬가지로 글로벌한 서비스이기 때문에 글로벌한 애플리케이션에 적합)을 사용하는 것이 좋다.**
+- **S3 Transfer Acceleration** improves transfer performance by routing traffic through **Amazon CloudFront’s globally distributed Edge Locations** and over **AWS backbone networks, and by using network protocol optimizations**.
+
+#105 AWS Managed Microsoft AD vs AD Connector vs Simple AD
+- AWS Managed Microsoft AD : AWS Managed Microsoft AD would also allow you to run **directory-aware workloads in the AWS Cloud**. AWS Managed Microsoft AD is your best choice if you have more **than 5,000 users and need a trust relationship set up between an AWS hosted directory and your on-premises directories.** : **directory-aware workloads, trust relationships with other domains**이 simple ad와 ad connector와 비교했을 때 AWS Managed Microsoft AD만 가지고 있는 특성이다.
+- AD Connector : Just remember that you should use AD Connector if you **only need to allow your on-premises users to log in to AWS applications with their Active Directory credentials**
+- Simple AD : Simple AD is the least expensive option and your best choice if you have **5,000 or fewer users** and **don’t need** the more advanced Microsoft Active Directory features **such as trust relationships with other domains.**
+
+#106 RDS Read Replica
+- Serving read traffic while the source DB instance is unavailable. : 하지만 마스터 db가 unavailable해지면 read replicat의 데이터는 동결 상태가 된다.
+- You may use a read replica for disaster recovery of the source DB instance, either in the same AWS Region or in another Region. : read replica를 글로벌한 disaster recovery에 사용할 수 있다.
