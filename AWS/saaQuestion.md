@@ -199,7 +199,7 @@ SAA 문제 풀이 정리
 #43 **can't move data directly from Snowball into a Glacier Vault or a Glacier Deep Archive Vault. You need to go through S3 first**
 - 스노우볼에서 glacier로 데이터를 옮기려면 먼저 s3로 옮긴 후 lifecycle로 옮기는 것이 일반적이다.
 
-#44 You can only use a **launch template** to provision capacity across multiple instance types using both On-Demand Instances and Spot Instances to achieve the desired scale, performance, and cost
+#44 You can only use a **launch template** to provision capacity across multiple instance types using **both On-Demand Instances and Spot Instances** to achieve the desired scale, performance, and cost
 - launch template : versioning가능, provision capacity across multiple instance types using both On-Demand Instances and Spot Instances가능
 - launch configuration : 위 2가지 불가능
 
@@ -282,6 +282,7 @@ SAA 문제 풀이 정리
 #60 Partition placement group은 Hadoop, 카산드라, 카프카 같은 대규모 데이터 분산 작업에 사용된다.
 
 #61 ASG Default Termination Policy
+- Find the AZ which has the most number of instances : 먼저 가장 많은 인스턴스가 있는 az를 찾는다.
 - 1순위로 제일 먼저 terminate되는 대상 : 오래된 launch configuration
 - 2순위로 terminate되는 대상 : 오래된 launch template
 - 3순위로 terminate되는 대상 : closest to next billing hour - 이는 시간 단위로 청구되는 linux, ubuntu ec2 usage cost를 줄여준다.
@@ -312,9 +313,9 @@ SAA 문제 풀이 정리
 #69 Endpoint on Route 53 Resolver
 - Create an inbound endpoint on Route 53 Resolver and then DNS resolvers on the on-premises network can forward DNS queries to Route 53 Resolver via this endpoint : Route 53 Resolver의 인바운드 엔드포인트는 온프레미스의 DNS resolver가 Route 53 Resolver에 쿼리를 요청할 수 있게 한다.
 - Create an outbound endpoint on Route 53 Resolver and then Route 53 Resolver can conditionally forward queries to resolvers on the on-premises network via this endpoint : Route 53 Resolver의 아웃바운드 엔드포인트는 조건적으로 온프레미스 네트워크의 DNS resolver에 쿼리를 요청할 수 있게 한다.
-- inbound endpoint 방향 : on-premises DNS resolvers > Route 53 Resolver
-- outbound endpoint 방향 : Route 53 Resolver > on-premises DNS resolvers
-- 참고로, dns resolver가 dns server로 쿼리를 보내 응답을 요청하는데 dns resolver > local dns server > (root dns server, tld dns server, sld dns server) 이 순서로 요청이 이루어진다고 보면 된다.
+- **inbound endpoint 방향** : on-premises DNS resolvers > Route 53 Resolver
+- **outbound endpoint 방향** : Route 53 Resolver > on-premises DNS resolvers
+- 참고로, **dns resolver가 dns server로 쿼리를 보내 응답을 요청하는데** **dns resolver > local dns server > (root dns server, tld dns server, sld dns server)** 이 순서로 요청이 이루어진다고 보면 된다.
 
 #70 Aurora Global Database
 - Short Recovery Time(RTO)에 특화

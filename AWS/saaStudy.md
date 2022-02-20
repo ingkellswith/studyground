@@ -147,7 +147,7 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - 또는 unencrypted snapshot에서 바로 encrypted된 볼륨을 생성 가능
   
 #30 EFS(Elastic File System)
-- Managed NFS(network file system) that can be mounted on many EC2
+- Managed **NFS(network file system)** that can be mounted on many EC2
 - highly available, expensive, pay per use **반대로 EBS는 PROVISIONED된 만큼 지불**
 - EFS works with EC2 instance in multi AZ **반대로 EBS는 bound to specific region**
 - EFS에 대해 보안 그룹 설정이 필요함
@@ -162,6 +162,9 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
   - Storage Tiers
   - 66강 필독
 - EFS-IA(Infrequent Access)에는 기본 옵션으로 30일 동안 접근되지 않은 파일은 IA영역으로 옮겨져 관리됨(Storage Tier) to save some costs
+- EBS Multi-attach는 single-az의 인스턴스만 지원하지만 EFS는 multi-az의 인스턴스와 통합 가능하다. 
+- Uses **security group** to control access to EFS
+- Compatible with Linux based AMI(not Windows) : 윈도우 ami는 지원하지 않는다.
 
 #31 AMI
 - AMIs are built for a specific AWS Region, they're unique for each AWS Region. 
@@ -184,7 +187,7 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - Load balancer
 
 #35 Network Load Balancer
-- NLB has one static IP per AZ, and supports assigning Elastic IP
+- **NLB has one static IP per AZ, and supports assigning Elastic IP** : 네트워크 로드밸런서는 az당 하나의 고정 IP를 갖고 elastic ip 할당을 지원한다.
 - Performance is better than ALB
 - 로드 밸런서 생성 시 AZ에 IP할당할 때, ALB는 assigned by AWS이지만
 - NLB는 각 AZ당 elastic ip를 할당할 수 있음  
@@ -198,7 +201,7 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - it is **transparent network gateway** becauase it has single entry and single exit
 - 요청이 보안그룹같은 조건에 부합하지 않으면 drop
 - 78강 다이어그램 참고
-- it uses GENEVE protocol on port 6081
+- it uses **GENEVE protocol on port 6081**
 
 #37 Cross-Zone Load Balancing
 - Classic Load Balancer
@@ -254,9 +257,11 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
     - Can use T2 unlimited burst feature
     - Recommended by AWS going forward
 - 참고로 RequestCountPerTarget은 CPUUtilization과 달리 생성 기본 옵션에 없기 때문에 이걸 Scaling의 지표로 사용하려면 CloudWatch를 사용해서 custom metric을 만든 후 CloudWatch알람을 사용해야 한다.
+- Use a **ready-to-use AMI** to reduce configuration time in order to be serving request fasters and reduce the cooldown period : **ready-to-use ami**를 사용하면 설정 시간을 줄여 cooldown period를 줄일 수 있다.
+- ASG tries the balance the number of instances across AZ by default : AZ간 인스턴스 수에 균형을 맞추는 것이 default이다.
 
 #41 RDS
-- can't ssh to an instance
+- **can't ssh** to an instance
 - **RDS Backups**
   - 자동 백업 존재
   - 매일 모든 데이터가 백업됨
@@ -267,14 +272,14 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
   - 보유 기간 무제한
 - **Storage Auto Scaling**
   - Helps you increase storage on your RDS DB instance dynamically
-  - When RDS detects you are running out of free database storage, it scales automatically
-  - You have to set Maximum Storage Threshold 
+  - When RDS detects you are running out of free database storage, **it scales automatically**
+  - **You have to set Maximum Storage Threshold** 
   - Useful for applications with unpredictable workloads
 - **Read Replicas**
-  - up to 5 read replicas
+  - up to 5 read replicas : 최대 5개의 replica 생성 가능
   - within az, cross az, cross region
-  - network cost : async replication to different az but same region no fee
-  - network cost : async replication to different region will fee
+  - network cost : async replication to **different az but same region** no fee
+  - network cost : async replication to **different region** will fee
   - replication is async
 - **RDS Multi AZ (Disaster Recovery)**
   - **SYNC replication**
@@ -286,10 +291,18 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
   - Zero downtime operation (no need to stop the DB)
   - Just click on “modify” for the database
 - Multi AZ와 Read Replica의 큰 차이점은 sync와 async라는 특징
+- **Multi-AZ replication is free**
+- **Encryption has to be defined at launch time**
+- **IAM-based authentication** can be used to login into RDS MySQL & PostgreSQL
+- RDS - IAM Authentication으로 얻을 수 있는 장점
+  - 참고 : aws rds generate-db-auth-token << 이런 명령어를 사용함
+  - Network in/out must be encrypted using **SSL**
+  - IAM to centrally manage users instead of DB : rds 서비스로부터 토큰 발급을 통해 IAM policy으로 만들어진 rds접근 권한을 가지므로 db접근 권한을 db가 아닌 IAM이 관리해 관리를 중앙화할 수 있다.
+  - Can leverage IAM Roles and EC2 Instance profiles for easy integration
 
 #42 RDS Security
 - 마스터가 암호화되어 있지 않으면, 레플리카는 암호화할 수 없다.
-- rds에서의 enforcec ssl
+- rds에서의 enforce ssl
   - postgre : parameter group 사용
   - mysql : sql command 사용(grant user ... require ssl)
 - 91강 summary 읽어보기
@@ -297,6 +310,24 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 #43 Aurora
 - aurora 구조 92강
 - aurora hands on 93강 : replica사용 안해도 storage는 replica는 3개의 az에 저장된다. that's guarantee.
+- aurora의 **shared storage volume**은 master, read replica가 공유하고, 10GB to 64TB까지 자동 확장된다.
+- One Aurora Instance takes writes(master)
+- Automated failover for master in **less than 30 seconds**
+- Master + up to 15 Aurora Read Replicas serve reads : 마스터 1개 + read replica 최대 15개 = 총 16개
+- Support for **Cross Region Replication**
+- 6 copies of your data across 3 AZ : 약간의 인스턴스가 fail해도 상관없다는 것을 보여줌
+  - 4 copies out of 6 needed for writes : 쓰기에 6개 중 최소 4개의 카피본이 필요
+  - 3 copies out of 6 need for reads : 읽기에 6개 중 최소 3개의 카피본이 필요
+- **Aurora Security**
+  - **Possibility to authenticate using IAM token (same method as RDS)**
+- **Aurora Cross Region Read Replicas**
+  - Useful for disaster recovery : 재해 복구에 유용하다.
+- **Aurora Global Database (recommended)** : 재해 복구에 **Aurora Cross Region Read Replicas**보다 더 유용하다.
+  - 1 Primary Region (read / write) 
+  - Up to **5 secondary(read-only) regions***, replication lag is less than 1 second
+  - Up to **16 Read Replicas per secondary region**
+  - **Helps for decreasing latency** : 모든 리전에서 빠른 접근 가능
+  - Promoting another region (for disaster recovery) has an RTO of < 1 minute 
 
 #44 Aurora Replicas - Auto Scaling
 
@@ -311,6 +342,8 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
   - Cloud Watch Alarm을 모니터링하는 Health Check / Private Endpoint같은 곳은 health check이 불가능하므로 cloudwatch metric을 사용해 연동
 
 #47 S3
+- If uploading more than **5GB**, must use “multi-part upload” : s3에 업로드하는 오브젝트가 5GB 이상이면 multi-part upload를 사용해야 한다. 
+- **Cloudfront는 1GB 미만인 static 자원을 캐시하기 적합하다. 1GB 이상인 자원에 대해서는 S3 Transfer Acceleration(Cloudfront와 마찬가지로 글로벌한 서비스이기 때문에 글로벌한 애플리케이션에 적합)을 사용하는 것이 좋다.**
 - s3 versioning : delete marker가 존재해서 restore가 가능함
 - 135강 s3 CORS 이론 읽어보기
 - Explicit DENY in an IAM Policy will take precedence over an S3 bucket policy.
@@ -726,7 +759,8 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - Key/Value store, Frequent reads : 세션 관리 최적화
 - **Clustering(Redis)**, Multi AZ, Read Replicas
 - **Redis**
-  - Multi AZ, Read Replicas, **Backup and restore features**
+  - Multi AZ with auto-failover, Read Replicas, **Backup and restore features**
+  - **Read Replicas to scale reads and have high availability**
   - AOF(Append Only File) : redis는 in-memory db이므로 인스턴스 종료 시 데이터 유실을 방지하기 위해서 명령문이 실행될 때마다 1초 정도 단위로 파일에 저장한다.
 - **MEMCACHED**
   - Multi-node for partitioning of data(sharding) : 샤딩이란 테이블의 수평 분할을 의미한다. 데이터가 많아질 경우를 대비하여 한 테이블의 데이터를 여러 데이터베이스에 나누어 저장함을 말한다. 한 레코드를 여러 디비에 저장하는 read replica가 아니라, 두 레코드를 두 개의 db에 나누어 저장하는 것이 샤딩이다.
@@ -734,12 +768,14 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
   - Multi-threaded architecture
   - Supports SASL(Simple Authentication and Security Layer)-based authentication : 애플리케이션 프로토콜들로 부터 인증 메커니즘을 분리한 것이 SASL이다. 즉 https같은 프로토콜을 사용하지 않고, 다른 보안 레이어를 사용한 것이다.
 - **Cache Security**
-  - **Do not support IAM authentication** : IAM Authentication을 지원하지 않는다. IAM Authentication을 사용하면 권한을 가진 aws유저가 redis에 어떤 값이든지 넣을 수 있기 때문에 그런 것이 아닌가 추측해본다. redis는 세션을 관리하는 데에 주로 쓰이기 때문에 보안이 중요할 수 밖에 없다.
+  - **Do not support IAM authentication** : **RDS, AURORA와 다르게 ElastiCache**는 IAM Authentication을 지원하지 않는다. IAM Authentication을 사용하면 권한을 가진 aws유저가 redis에 어떤 값이든지 넣을 수 있기 때문에 그런 것이 아닌가 추측해본다. redis는 세션을 관리하는 데에 주로 쓰이기 때문에 보안이 중요할 수 밖에 없다.
   - **IAM policies on ElastiCache are only used for AWS API-level security** : API-level security 정도만 iam policy로 관리할 수 있다.
   - **Redis AUTH**
+    - IAM policies on ElastiCache are only used for AWS API-level security : IAM Policy는 그냥 elasticache api를 호출가능한 iam인지만 확인하고, elasticache에 접근해서 데이터를 조작할 수 있는 권한을 부여하지는 않는다는 뜻읻다.
     - You can set a **password/token** when you create a Redis cluster
     - This is an extra level of security for your cache 
     - Support SSL in flight encryption
+- Redis Sorted sets guarantee both **uniqueness** and **element ordering**
 
 #100 DynamoDB Features
 - AWS proprietary(전용, 독점 정도의 뜻) technology, managed NoSQL database
@@ -1268,7 +1304,7 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 
 #150 VPC Endpoints & Private Link
 - VPC Endpoint와 VPC PrivateLink는 동일한 VPC Endpoint를 사용하는데, 차이점은 VPC PrivateLink는 네트워크 로드밸런서나 게이트웨이 로드밸런서를 사용한 커스텀 Endpoint Service를 만든 후 CreateVPCEndpoint에서 find service by name 해야하지만, VPC Endpoint는 커스텀 Endpoint Service를 만들 필요 없이
-CreateVPCEndpoint에서 AWS Service를 선택하고 원하는 Interface, Gateway를 고르면 된다.당연히 이를 사용하는 이유는 동일하게 전체 vpc를 노출하지 않고 원하는 서비스에 대해서만 노출하고 private network(aws network)를 사용해public network를 사용하고 싶지 않을 때 사용한다.
+CreateVPCEndpoint에서 AWS Service를 선택하고 원하는 Interface, Gateway를 고르면 된다.당연히 이를 사용하는 이유는 동일하게 전체 vpc를 노출하지 않고 원하는 서비스에 대해서만 노출하고 private network(aws network)를 사용해 public network를 사용하고 싶지 않을 때 사용한다.
 
 #151 Direct Connect
 - **Direct Connect – Connection Types : Lead times are often longer than 1 month to establish a new connection** : 새로운 커넥션을 만드는데 1달 이상이 걸리므로 설계 이전에 인지하고 있어야 한다.
@@ -1365,3 +1401,12 @@ CreateVPCEndpoint에서 AWS Service를 선택하고 원하는 Interface, Gateway
 #166 More Architecture Link
 - https://aws.amazon.com/architecture/
 - https://aws.amazon.com/solutions/
+
+#177 DNS
+- DNS : Domain Name System which translates the human friendly hostnames into the machine IP addresses
+- NAME SERVER : resolves DNS queries
+- Domain Registrar : 도메인 네임 등록 대행자 > route53, 가비아 등등
+- SAA 문제 정리 > #69참고할 것
+
+#178 Route53
+- **Except for Alias records, TTL is mandatory for each DNS record**
