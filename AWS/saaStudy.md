@@ -349,6 +349,7 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - Explicit DENY in an IAM Policy will take precedence over an S3 bucket policy.
 - IAM Policy가 s3 bucket policy에 우선하게 하려면 explicit deny를 iam policy에 적용하면 된다.
 - 99.999999999% durability / 99.99% availability : durability는 추후 언젠가는 데이터를 받을 수 있음을 의미하고, availabilty는 즉시 데이터를 받을 수 있음을 의미한다.
+- S3 Replication : S3 Replication은 cross region, same region 모두 가능하고, async replication을 사용한다.
 
 #48 S3 Storage Classes : One Zone IA를 제외한 모든 클래스는 3개 이상의 az를 가진다. 
 - S3 Standard
@@ -416,11 +417,11 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - WORM (Write Once Read Many) model 구현
 - **versioning이 활성화된 상태에서만 동작**
 - Object retention(보유 기간)
-  - Retention Period: specifies a fixed period
-  - Legal Hold: same protection, no expiry date
+  - Retention Period: specifies a fixed period > 특정 기간 동안만 보유
+  - Legal Hold: same protection, no expiry date > 위와 같지만 만료일이 없음
 - Mode:
   - Governance mode: 루트 계정은 모드 변경 가능, 파일 변경 가능
-  - Compliance mode: 한 번 설정하면 루트 계정이라고 모드 변경 불가, 파일 변경 불가
+  - Compliance mode: 한 번 설정하면 루트 계정이라도 모드 변경 불가, 파일 변경 불가
 
 #58 CloudFront vs S3 Cross Region Replication
 - CloudFront를 사용해야 할 곳
@@ -436,13 +437,29 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 #60 CloudFront – Origin Groups
 - high availability를 위해 origin을 여러 개 둘 수 있음
 
-#61 CloudFront – Field Level Encryption
+#61 CloudFront 
+- **Origin Access Identity** : 사용자가 S3 버킷에서 직접 액세스하지 않고, **CloudFront를 통해서만 파일에 액세스**할 수 있습니다.
+  - 또한, 보통 **S3 bucket policy**와 함께 사용한다.
+  - CloudFront Geo Restriction : 화이트 리스트, 블랙 리스트로 접근할 수 있는 국가 선택
+- **S3 Cross Region Replication vs CloudFront**
+  - S3 Cross Region Replication : Great for dynamic content that needs to be available at low-latency in few regions
+  - CloudFront :  Great for static content that must be available everywhere
+- **CloudFront Signed URL vs Signed Cookies**
+  - Signed URL : access to individual files (one signed URL per file)
+  - Signed Cookies : access to multiple files (one signed cookie for many files)
+- **CloudFront Origin Groups**
+  - cloudfront origin group은 primary origin과 secondary origin을 두어 region 레벨의 고가용성을 실현하게 해준다.
+  - S3 + CloudFront : Region-level High Availability
+  - Origin Group의 대상은 ec2가 될 수도 s3가 될 수도 있다.
 
 #62 Unicast IP vs Anycast IP
 - AWS Global Accelerator는 Anycast IP를 사용해서 같은 ip중 geo location이 더 가까운 쪽으로 라우팅되는 방식을 채택
 
 #63 CloudFront vs Global Accelerator
-- CloudFront uses Edge Locations to cache content while Global Accelerator uses Edge Locations to find an optimal pathway to the nearest regional endpoint. 
+- Global Accelerator
+  - Improves performance for a wide range of applications over **TCP or UDP**
+  - Good fit for **non-HTTP** use cases
+- CloudFront uses Edge Locations to **cache content** while Global Accelerator uses Edge Locations to find an **optimal pathway** to the nearest regional endpoint. 
 - CloudFront is designed to handle HTTP protocol meanwhile Global Accelerator is best used for both HTTP and non-HTTP protocols such as TCP and UDP.
 
 #64 AWS Snow Family
@@ -454,10 +471,10 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - Snowmobile - 수십 엑사바이트 마이그레이션에 사용
 
 #64 Snow Family Edge Computing
-- 오지에서 클라우드 컴퓨팅을 사용하기 위해서 snow family를 사용할 수 있고, snowcone같은 물리적 장치에 접근할 때 OpsHub를 사용한다.
+- 오지에서 클라우드 컴퓨팅을 사용하기 위해서 snow family를 사용할 수 있고, snowcone같은 물리적 장치에 접근할 때 **AWS OpsHub**를 사용한다.
 
 #64 Snowball into Glacier
-- snowball에서 바로 glacier로 옮길 수 없고, s3로 옮긴 후 s3 lifecycle을 이용해서 glacier로 옮기는 것이 제일 좋은 방법이다.
+- **snowball에서 바로 glacier로 옮길 수 없고, s3로 옮긴 후 s3 lifecycle을 이용해서 glacier로 옮기는 것이 제일 좋은 방법이다.**
 
 #65 SQS - Standard Queue
 - FIFO가 아닌 Standard버전의 특성
@@ -1410,3 +1427,33 @@ CreateVPCEndpoint에서 AWS Service를 선택하고 원하는 Interface, Gateway
 
 #178 Route53
 - **Except for Alias records, TTL is mandatory for each DNS record**
+
+#179 FSx
+- **Amazon FSx for Windows**
+  - **SMB**, NTFS, NFS, **Microsoft Active Directory integration**
+  - **Can be accessed from your on-premise infrastructure**
+- **Amazon FSx for Lustre**
+  - **High Performance Computing(HPC)**
+  - Seamless integration with S3
+    - **Can “read S3” as a file system (through FSx)**
+    - Can write the output of the computations back to S3 (through FSx)
+- **Scratch File System**
+  - 높은 성능, 데이터는 복제되지 않아 임시 스토리지 형식임
+- **Persistent File System**
+  - 데이터가 복제되어 Long-term storage라고 볼 수 있음
+
+#180 Storage Gateway
+- 온 프레미스에서 s3를 사용하려면 어떻게 해야 하나? - AWS Storage Gateway가 답이다.
+- **File Gateway**
+  - **NFS, SMB**
+  - **Integrated with Active Directory(AD)**
+- **Volume Gateway**
+  - **Block Storage**
+  - **Cached volumes**: low latency access to most recent data
+  - **Stored volumes**: entire dataset is on premise, scheduled backups to S3
+- **Tape Gateway**
+- **Hardware Appliance**
+  - No on-premises virtualization : 온프레미스에서 가상화를 해야 storage gateway를 사용할 수 있는데 가상화를 사용할 수 없을 때 사용하는 옵션이 이것임.
+
+#181 AWS Transfer Family
+- A fully-managed service for **file transfers** into and out of **Amazon S3 or Amazon EFS** using the FTP protocol

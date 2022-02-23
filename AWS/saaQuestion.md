@@ -291,7 +291,8 @@ SAA 문제 풀이 정리
 
 #63 Reserved Instance vs Spot Instance
 - Reserved Instance는 지속적인 사용에 효율적
-- Spot Instance는 monthly work에 효율적
+- Spot Instance는 monthly work에 효율적이다.
+- 그러나 monthly work라도 작업을 중단하면 안되는 경우 혹은 특정 시간 내에 완료해야 하는 경우는 적합하지 않다.
 - Spot Instances are well-suited for **data analysis, batch jobs, background processing, and optional tasks**
 - Amazon EC2 needs the capacity back일 때, Spot instance가 종료될 수 있는데 이 때 공식문서에서는, "Amazon EC2 automatically resubmits a persistent Spot Instance request after the Spot Instance associated with the request is terminated"라고 말하며 다른 spot instance를 자동으로 요청한다.
 - 즉 **Amazon EC2 needs the capacity back 또는 Spot price exceeds the maximum price for your request일 때 spot instance는 terminate**된다.
