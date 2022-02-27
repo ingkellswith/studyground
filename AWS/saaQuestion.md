@@ -360,10 +360,12 @@ SAA 문제 풀이 정리
 #80 AWS Cloudtrail vs AWS Config vs AWS Systems Manager
 - AWS Config : AWS 리소스 구성 기록 및 평가 > **resource-specific history, audit, and compliance**
   - AWS Config는 구성 기록을 제공하기 위해 **AWS 리소스에 대한 변경 세부 정보**를 기록한다. AWS Management 콘솔, API 또는 CLI를 사용하여 **과거 어느 시점에서든 리소스 구성이 어떻게 생겼는지**에 대한 세부 정보를 얻을 수 있습니다.
+  - it is a **per-region** service
 - AWS Cloudtrail : 사용자 활동 및 API 사용 추적 > **account-specific activity and audit**
   - AWS CloudTrail은 감사, 보안 모니터링 및 운영 문제 해결을 지원한다. CloudTrail은 AWS 서비스 전반의 **AWS 사용자 활동 및 API 사용량**을 이벤트로 기록한다. CloudTrail 이벤트는 **"누가 무엇을, 어디서, 언제 했습니까?"라는 질문**에 답하는 데 도움이 된다.
   - CloudTrail은 두 가지 유형의 이벤트를 기록합니다. S3 **버킷 생성 또는 삭제**와 같은 리소스에 대한 제어 플레인 작업을 캡처하는 **관리 이벤트**
   - S3 객체 읽기 또는 쓰기와 같은 리소스 내 데이터 플레인 작업을 캡처하는 **데이터 이벤트**
+  - **A trail can be applied to All Regions(default) or a single Region**
 - AWS Systems Manager : AWS 및 온프레미스 리소스에 대한 운영 인사이트 확보 : **리소스 그룹, 중앙집중화, aws리소스 관리의 중심화**
 
 #81 AWS Transfer Family
@@ -408,7 +410,7 @@ SAA 문제 풀이 정리
 #88 Amazon EC2 Auto Scaling chooses the policy that provides the largest capacity : 두 정책이 충돌하면 가장 큰 capacity를 우선해서 동작한다.
 
 #89 Step Function vs Simple WorkFlow Service
-- Step Function **JSON으로 상태 시스템을 정의**한다.
+- Step Function : **JSON으로 상태 시스템을 정의**한다.
 - Simple WorkFlow Service : 프로그래밍 언어로 **Decider 프로그램**을 작성하거나 Flow Framework를 통해 동기식 상호 작용을 구성하는 프로그래밍 구문을 작성
 
 #90 아키텍처
@@ -486,3 +488,6 @@ SAA 문제 풀이 정리
 #106 RDS Read Replica
 - Serving read traffic while the source DB instance is unavailable. : 하지만 마스터 db가 unavailable해지면 read replicat의 데이터는 동결 상태가 된다.
 - You may use a read replica for disaster recovery of the source DB instance, either in the same AWS Region or in another Region. : read replica를 글로벌한 disaster recovery에 사용할 수 있다.
+
+#107 aws x-ray
+- trace and debug

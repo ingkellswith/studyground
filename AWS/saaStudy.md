@@ -1109,7 +1109,8 @@ AWS Certified Solutions Architect Associate Certification SAA-C02 스터디
 - If enabled: automatic key rotation happens every 1 year
 - Previous key is **kept active** so you can decrypt old data : 이전 키는 이전 데이터들을 위해서 절대 삭제되면 안된다.
 - New Key has the same CMK ID (only the backing key is changed)
-- Automatic Key Rotation이 발생하면 CMK ID는 변경되지 않고 내부의 (Backing Key)실제 키 값만 변경된다. 물론 Old Backing Key도 save된다.
+- Automatic Key Rotation이 발생하면 **CMK ID는 변경되지 않고** 내부의 (Backing Key)실제 키 값만 변경된다. 물론 Old Backing Key도 save된다.
+- Managed Key Rotation은 **CMK ID를 변경한다.**
 
 #127 KMS Manual Key Rotation
 - **90일, 180일** 등의 간격으로 key를 rotate할 수 있다.
