@@ -21,6 +21,10 @@ Spring Articles
 - Intellij
 [1. IntelliJ 디버깅 해보기](https://jojoldu.tistory.com/149)
 
-- jpa에서의 Insert or update
-[1. [JPA] JPA를 적용하며.. ( insert, update 분기 편 )](https://jessyt.tistory.com/42)
-[2. 스프링 데이터 JPA - 새로운 Entity 판별](https://jaime-note.tistory.com/65)
+- jpa에서의 Insert or update  
+[1. [JPA] JPA를 적용하며.. ( insert, update 분기 편 )](https://jessyt.tistory.com/42)  
+[2. 스프링 데이터 JPA - 새로운 Entity 판별](https://jaime-note.tistory.com/65)  
+
+- Spring에서의 transaction원리  
+[1. 스프링 @트랜잭션과 스프링 AOP - 스프링 @Transactional이 제대로 적용되지 않는 이유를 이해하려면 프록시 기반의 스프링 AOP에 대해 알아야 합니다.](https://www.whiteship.me/spring-transactional-and-spring-aop/)  
+[2. [Spring] @Transactional 사용시 주의해야할 점](https://mommoo.tistory.com/92)
