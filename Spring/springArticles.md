@@ -18,8 +18,8 @@ Spring Articles
 - db connection timeout  
 [1. Spring boot Thread Pools 에러](https://do-hansung.tistory.com/41)
 
-- Intellij
-[1. IntelliJ 디버깅 해보기](https://jojoldu.tistory.com/149)
+- Intellij  
+[1. IntelliJ 디버깅 해보기](https://jojoldu.tistory.com/149)  
 
 - jpa에서의 Insert or update  
 [1. [JPA] JPA를 적용하며.. ( insert, update 분기 편 )](https://jessyt.tistory.com/42)  
