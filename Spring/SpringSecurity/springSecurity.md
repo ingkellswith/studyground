@@ -134,7 +134,16 @@ Spring Expression Language(SpEL)표현인 **ConfigAttribute**를 사용하는 �
 
 ![spring-security-webfilter](https://user-images.githubusercontent.com/55550753/160280935-2dfbacd2-0dc2-471f-8edb-52963e2a6c68.PNG)  
 
-클라이언트는 응용 프로그램에 요청을 전송하고 컨테이너는 요청 URI 경로에 따라 응용 프로그램에 적용할 **필터**와 **서블릿**을 결정한다. 최대 1개의 서블릿이 단일 요청을 처리할 수 있지만 **필터가 체인을 형성**하므로 **필터가 정렬**된다. 실제로 필터는 요청 자체를 처리하려는 경우 체인의 나머지 부분에 **거부권을 행사**할 수 있다. 필터는 다운스트림필터 및 서블릿에서 사용되는 **요청 또는 응답을 수정**할 수도 있다. **필터 체인의 순서는 매우 중요하며 Spring Boot에서는 두 가지 메커니즘을 통해 관리한다.** 이 두가지 방법은 Spring Bean의 @Order를 사용하는 방법 또는 Ordered를 구현하는 방법이다.
+클라이언트는 응용 프로그램에 요청을 전송하고 컨테이너는 요청 URI 경로에 따라 응용 프로그램에 적용할 **필터**와 **서블릿**을 결정한다. 최대 1개의 서블릿이 단일 요청을 처리할 수 있지만 **필터가 체인을 형성**하므로 **필터가 정렬**된다. 실제로 필터는 요청 자체를 처리하려는 경우 체인의 나머지 부분에 **거부권을 행사**할 수 있다. 필터는 다운스트림필터 및 서블릿에서 사용되는 **요청 또는 응답을 수정**할 수도 있다. **필터 체인의 순서는 매우 중요하며 Spring Boot에서는 두 가지 메커니즘을 통해 관리한다.** 이 두가지 방법은 Spring Bean의 @Order를 사용하는 방법 또는 Ordered를 구현하는 방법이다.  
 
-또, 필터 체인은 API의 일부로서 순서가 설정되어 있는 **FilterRegistrationBean**의 일부가 될 수도 있다. 일부 기성 필터는 서로 상대적인 순서를 나타내는 데 도움이 되는 자체 상수를 정의한다. 예를 들어, 스프링 세션의 **Session Repository Filter**에는 정수인 DEFAULT_ORDER가 있다. 이 DEFAULT_ORDER에 'MIN_VALUE + 50'라고 작성하면 체인의 초기에 존재하지만, 그 앞에 오는 다른 필터도 배제하지 않음을 나타낸다.
+또, 필터 체인은 API의 일부로서 순서가 설정되어 있는 **FilterRegistrationBean**의 일부가 될 수도 있다. 일부 기성 필터는 서로 상대적인 순서를 나타내는 데 도움이 되는 자체 상수를 정의한다. 예를 들어, 스프링 세션의 **Session Repository Filter**에는 정수인 DEFAULT_ORDER가 있다. 이 DEFAULT_ORDER에 'MIN_VALUE + 50'라고 작성하면 체인의 초기에 존재하지만, 그 앞에 오는 다른 필터도 배제하지 않음을 나타낸다.  
 
+Spring Security는 체인에 단일 필터로 설치되며 구체적인 타입은 **FilterChainProxy**이다. Spring Boot 어플리케이션에서 **security filter**는 ApplicationContext의 Bean으로 등록되고 디폴트로 설치되어 모든 request에 적용된다. **Spring Security는 필터로서 SecurityProperties에서 정의한 위치에 설치된다.** FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER(Spring Boot 어플리케이션이 요구를 랩하여 동작을 변경하는 경우 필터가 가질 것으로 예상되는 최대 순서)에 의해 DEFAULT_FILTER_ORDER는 고정된다. 컨테이너의 관점에서 Spring Security는 **단일 필터**이지만 그 내부에는 각각 특별한 역할을 하는 **추가 필터**가 있다. 다음 그림은 이 관계를 나타낸다.  
+
+![image](https://user-images.githubusercontent.com/55550753/160423522-1d8de7d7-4bfe-4c16-ab19-778d99650b02.png)  
+"Spring Security is a single physical Filter but **delegates processing to a chain of internal filters**" : 스프링 시큐리티는 하나의 물리적 필터이지만 내부의 필터 체인에 그 처리를 위임한다.  
+
+실제로 **보안 필터**에는 다음과 같은 간접 레이어가 1개 더 있다: 보통 컨테이너에 **DelegatingFilterProxy**로 설치되고, 이것은 Spring Bean일 필요는 없다. **DelegatingFilterProxy는 FilterChainProxy에 위임된다.** **FilterChainProxy**는 항상 Bean이며 보통 **springSecurityFilterChain**이라는 고정 이름을 가진다. **FilterChainProxy**에는 필터의 체인으로서 모든 보안 로직이 정렬되어 있다. 모든 필터는 동일한 API를 가지며(모든 필터는 Servlet Specification에서 필터 인터페이스를 구현), 모든 필터는 체인의 나머지 부분을 거부할 수 있다.
+
+![image](https://user-images.githubusercontent.com/55550753/160426215-d5bdce54-2f5d-4268-8d99-5d15cfb55772.png)
+출처 : https://logical-code.tistory.com/194
