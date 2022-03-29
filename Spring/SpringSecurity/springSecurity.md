@@ -143,7 +143,17 @@ Spring Security는 체인에 단일 필터로 설치되며 구체적인 타입�
 ![image](https://user-images.githubusercontent.com/55550753/160423522-1d8de7d7-4bfe-4c16-ab19-778d99650b02.png)  
 "Spring Security is a single physical Filter but **delegates processing to a chain of internal filters**" : 스프링 시큐리티는 하나의 물리적 필터이지만 내부의 필터 체인에 그 처리를 위임한다.  
 
-실제로 **보안 필터**에는 다음과 같은 간접 레이어가 1개 더 있다: 보통 컨테이너에 **DelegatingFilterProxy**로 설치되고, 이것은 Spring Bean일 필요는 없다. **DelegatingFilterProxy는 FilterChainProxy에 위임된다.** **FilterChainProxy**는 항상 Bean이며 보통 **springSecurityFilterChain**이라는 고정 이름을 가진다. **FilterChainProxy**에는 필터의 체인으로서 모든 보안 로직이 정렬되어 있다. 모든 필터는 동일한 API를 가지며(모든 필터는 Servlet Specification에서 필터 인터페이스를 구현), 모든 필터는 체인의 나머지 부분을 거부할 수 있다.
+실제로 **보안 필터**에는 다음과 같은 간접 레이어가 1개 더 있다: 보통 컨테이너에 **DelegatingFilterProxy**로 설치되고, 이것은 Servlet Spec이기에 Spring Bean이 아니다. **DelegatingFilterProxy는 요청을 FilterChainProxy에 위임한다.** **FilterChainProxy**는 항상 Bean이며 보통 **springSecurityFilterChain**이라는 고정 이름을 가진다. **FilterChainProxy**에는 필터의 체인으로서 모든 보안 로직이 정렬되어 있다. 모든 필터는 동일한 API를 가지며(모든 필터는 Servlet Specification에서 필터 인터페이스를 구현), 모든 필터는 체인의 나머지 부분을 거부할 수 있다.
 
-![image](https://user-images.githubusercontent.com/55550753/160426215-d5bdce54-2f5d-4268-8d99-5d15cfb55772.png)
-출처 : https://logical-code.tistory.com/194
+![image](https://user-images.githubusercontent.com/55550753/160426215-d5bdce54-2f5d-4268-8d99-5d15cfb55772.png)   
+출처 : https://logical-code.tistory.com/194  
+
+위는 스프링 시큐리티의 구조를 조금 더 상세하게 설명한 이미지인 것 같아 남겨본다.  
+
+![image](https://user-images.githubusercontent.com/55550753/160637148-6b886c63-a441-49b3-a981-b52a3cedd985.png)  
+
+또한 위 그림처럼 하나의 **FilterChainProxy**에 여러 개의 필터 체인이 있을 수 있다(매칭되는 원리는 /foo/** 가 /** 에 선행되어 매칭된다). 중요한 점은 요청을 처리하는 필터 체인은 여러 개의 필터 체인 중에서 **하나**라는 점이다.  
+
+기본 스프링 부트 애플리케이션에는 여러 개의(n개) 필터 체인이 있으며, 여기서 보통 n은 6이다. **첫 n-1개의 필터 체인**은 /css/* 및 /images/** 등의 스태틱자원 패턴과 오류 뷰인 /error를 무시하기 위해서 존재한다(이 path는 SecurityProperties Configuration bean에서 security.ignored를 사용하여 사용자가 제어할 수 있다). **1개의 마지막 체인**은 catch-all path(/**)와 일치하며 **인증, 인가, 예외 처리, 세션 처리, 헤더 쓰기** 등의 로직이 포함되어 있다. 이 체인에는 기본적으로 총 11개의 필터가 있지만 일반적으로 사용자는 어떤 필터가 언제 사용되는지 걱정할 필요가 없다.
+
+**참고** : **Spring Security 내부의 모든 필터가 스프링 컨테이너에 인식되지 않는다는 사실**은 특히 Filter 유형의 모든 @Beans가 기본적으로 컨테이너에 자동으로 등록되는 Spring Boot 어플리케이션에서 중요하다. 따라서 체인필터에 커스텀필터를 추가할 경우 @Bean으로 하지 않거나, 컨테이너 등록을 명시적으로 disable 하는 FilterRegistrationBean으로 wrap해야 한다.
