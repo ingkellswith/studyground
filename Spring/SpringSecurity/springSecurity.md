@@ -157,3 +157,54 @@ Spring Security는 체인에 단일 필터로 설치되며 구체적인 타입�
 기본 스프링 부트 애플리케이션에는 여러 개의(n개) 필터 체인이 있으며, 여기서 보통 n은 6이다. **첫 n-1개의 필터 체인**은 /css/* 및 /images/** 등의 스태틱자원 패턴과 오류 뷰인 /error를 무시하기 위해서 존재한다(이 path는 SecurityProperties Configuration bean에서 security.ignored를 사용하여 사용자가 제어할 수 있다). **1개의 마지막 체인**은 catch-all path(/**)와 일치하며 **인증, 인가, 예외 처리, 세션 처리, 헤더 쓰기** 등의 로직이 포함되어 있다. 이 체인에는 기본적으로 총 11개의 필터가 있지만 일반적으로 사용자는 어떤 필터가 언제 사용되는지 걱정할 필요가 없다.
 
 **참고** : **Spring Security 내부의 모든 필터가 스프링 컨테이너에 인식되지 않는다는 사실**은 특히 Filter 유형의 모든 @Beans가 기본적으로 컨테이너에 자동으로 등록되는 Spring Boot 어플리케이션에서 중요하다. 따라서 체인필터에 커스텀필터를 추가할 경우 @Bean으로 하지 않거나, 컨테이너 등록을 명시적으로 disable 하는 FilterRegistrationBean으로 wrap해야 한다.
+https://stackoverflow.com/questions/49654751/how-do-i-add-a-filter-to-spring-security-based-on-a-profile
+
+## Creating and Customizing Filter Chains
+
+스프링 부트의 기본 **fallback** 필터 체인(the one with the /** request matcher)은 SecurityProperties.BASIC_AUTH_ORDER의 순서가 기본적으로 정의되어 있다. 이는 security.basic.enabled=false으로 off하거나, you can use it as a fallback and define other rules with a lower order : fallback으로서 사용하고 다른 규칙을 더 우선순위로 선언할 수 있다. 아래는 예시인데, **@Order에서 -10을 한 이유는 위에서 기본 필터가 11개 있다고 말한 것 때문인데 -10을 하면 제일 먼저 사용되는 필터가 된다, @Configuration을 선언해 빈으로 등록한 이유는 이를 fallback필터로 사용하기 위함이다(이 말인 즉슨 fallback필터로 사용하지 않으려면 빈으로 등록하지 않으면 되겠다).**
+
+```text
+@Configuration
+@Order(SecurityProperties.BASIC_AUTH_ORDER - 10)
+public class ApplicationConfigurerAdapter extends WebSecurityConfigurerAdapter {
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    http.antMatcher("/match1/**")
+     ...;
+  }
+}
+```
+
+위 빈을 사용하면 Spring Security는 fallback 필터 전에 새로운 필터 체인으로 위 빈을 추가한다(**조금 헷갈릴 수 있는데 위 경우는 새로운 필터를 빈으로 등록해 fallback 필터로 사용함과 동시에 기존 fallback보다는 순위가 낮기에 fallback 필터 체인 중에서 먼저 호출되는 fallback필터 임을 말하는 것 같다**).  
+
+또한 리소스 세트 별로(ex. /api/admin/*, /api/user/*) 액세스 권한이 다른데, **각 리소스 세트에는 고유한 순서와 고유한 request matcher가 있는 자체 WebSecurityConfigurerAdapter가 있다.** 일치 규칙이 겹치면 가장 먼저 정렬된 필터 체인이 이긴다.  
+
+## Request Matching for Dispatch and Authorization
+
+**A security filter chain(또는 WebSecurityConfigrAdapter)**에는 HTTP request에 적용할지를 결정하기 위해 사용되는 request matcher가 있다. **특정 필터 체인을 적용하기로 결정되면 다른 필터 체인은 적용되지 않는다(여기에서 아래의 ApplicationConfigurerAdapter를 하나의 필터 체인이라고 볼 수 있고, 여기에서 request matcher에 의해 매칭이 되면 다른 필터 체인은 적용되지 않는다는 뜻인 것 같다.**). 다만, 필터 체인내에서, 다음과 같이 HttpSecurity configurer에 추가 matcher를 설정하는 것으로, **인가(Authorization)**를 보다 세밀하게 제어할 수 있다.
+
+```text
+@Configuration
+@Order(SecurityProperties.BASIC_AUTH_ORDER - 10)
+public class ApplicationConfigurerAdapter extends WebSecurityConfigurerAdapter {
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    http.antMatcher("/match1/**")
+      .authorizeRequests()
+        .antMatchers("/match1/user").hasRole("USER")
+        .antMatchers("/match1/spam").hasRole("SPAM")
+        .anyRequest().isAuthenticated();
+  }
+}
+```
+
+Spring Security를 설정할 때 가장 쉽게 저지르는 오류 중 하나는 이러한 matcher들이 **다른 프로세스에 적용**된다는 것을 잊는 것이다. 하나는 필터 체인 전체에 적용되는 request matcher이며, 다른 하나는 적용할 액세스 규칙을 선택하는 것이다. 
+
+풀이하면, 위 `ApplicationConfigurerAdapter`클래스에서 `http.antMatcher("/match1/**")`는 필터 체인 전체에 적용되는 request matcher이며,
+```text
+.authorizeRequests()
+.antMatchers("/match1/user").hasRole("USER")
+.antMatchers("/match1/spam").hasRole("SPAM")
+.anyRequest().isAuthenticated();
+```
+이 부분은 적용할 액세스 규칙을 선택하는 것이다.
