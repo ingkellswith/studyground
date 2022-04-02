@@ -208,3 +208,82 @@ Spring Security를 설정할 때 가장 쉽게 저지르는 오류 중 하나는
 .anyRequest().isAuthenticated();
 ```
 이 부분은 적용할 액세스 규칙을 선택하는 것이다.
+
+## Combining Application Security Rules with Actuator Rules
+
+엔드포인트에 **Spring Boot Actuator**를 사용하는 경우 보호가 필요할 수 있으며 기본적으로는 보호된다. 실제로 **Spring Boot Actuator**를 보안 애플리케이션에 추가하는 즉시 **Spring Boot Actuator** 엔드포인트에만 적용되는 추가 필터 체인이 생성된다. **Spring Boot Actuator**의 엔드포인트에만 일치하는 request matcher와 함께 정의되며 **ManagementServerProperties.BASIC_AUTH_ORDER**의 순서를 가진다. **ManagementServerProperties.BASIC_AUTH_ORDER**는 기본 SecurityProperties fallback 필터보다 5 은 BASIC_AUTH_ORDER이므로 **fallback 전에** 참조된다.
+
+보안 규칙을 **Actuator Endpoint**에 적용하려면, 기본 actuator 필터(바로 위에서 설명한 폴백 필터보다 5만큼 먼저 호출되는 필터)보다 먼저 거쳐야 하고, 모든 **Actuator Endpoint**를 포함하는 **request matcher**가 있는 필터 체인을 추가할 수 있다. 이 경우, **Actuator의 기본 필터**보다 늦게, **fallback 필터**보다 빠른 독자적인 필터를 추가하는 것이 가장 간단하다(예를 들면, **Management Server Properties.BASIC_AUTH_ORDER + 1**). 다음은 이를 나타낸다.
+
+```text
+@Configuration
+@Order(ManagementServerProperties.BASIC_AUTH_ORDER + 1)
+public class ApplicationConfigurerAdapter extends WebSecurityConfigurerAdapter {
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    http.antMatcher("/foo/**")
+     ...;
+  }
+}
+```
+
+## Method Security
+
+Spring Security는 웹 응용 프로그램의 보안 보호와 더불어 **Java 메서드 실행**에 액세스 규칙을 적용할 수 있도록 지원한다. Spring Security의 경우 이는 단지 다른 유형의 "보호된 리소스"일 뿐이다(즉 웹 계층의 보안이나, 메소드 보안이나 결국 보호되는 자원인 것이다). 접근 규칙은 같은 형식의 ConfigAttribute 문자열(for example, roles or expressions)을 사용하여 선언된다. 이 메소드 보안을 위한 첫 번째 단계는 **메서드 보안**을 유효하게 하는 것이다. 예를 들어 어플리케이션의 최상위 설정에서는 다음과 같다.
+
+```text
+@SpringBootApplication
+@EnableGlobalMethodSecurity(securedEnabled = true)
+public class SampleSecureApplication {
+}
+```
+
+이후, 아래 `@Secured("ROLE_USER")` 처럼 메소드에 직접적으로 method security를 설정할 수 있다.
+
+```text
+@Service
+public class MyService {
+  @Secured("ROLE_USER")
+  public String secure() {
+    return "Hello Security";
+  }
+}
+```
+
+이 예는 @Service를 사용해 method security를 구현한 예이다. **스프링이 이 타입의 빈을 생성하면, 이 빈은 프록시처리되고, 호출자는 메소드가 실제로 호출되기 전에 security interceptor를 반드시 거쳐야 한다.** 또한, Access가 거부되면 AccessDeniedException를 발생시킨다.
+
+메소드에 security constraints을 적용하기 위해 사용할 수 있는 다른 주석(특히 `@PreAuthorize` 및 `@PostAuthorize`)도 있다. 이 역시 `@Secured`처럼 메소드 어노테이션으로 사용하며, **method parameters와 return values**에 대한 참조를 어노테이션 레벨에서 할 수 있다는 장점이 존재한다.
+
+참고 : 필터 체인은 **인증(Authentication)**이나 **로그인 페이지로 리다이렉트** 등의 사용자 경험 기능을 제공할 수 있다.
+
+## Working with Threads
+
+Spring Security는 기본적으로 thread-bound되어 있다. 이는 현재 **인증된 principal(본인)**을 다양한 **다운스트림 소비자**가 이용할 수 있도록 해야 하기 때문이다. **기본 빌딩 블록은 Security Context이다(The basic building block is the SecurityContext)**. SecurityContext는 Authentication객체를 포함할 수 있다(사용자가 로그인하면 Authentication객체는 explicitly authenticated된다). SecurityContextHolder의 정적 편의 메서드를 통해 SecurityContext에 언제든지 액세스하여 조작할 수 있다. 이것은 결국, a ThreadLocal을 조작하는 것과 같다. 다음으로 이것의 예시이다.
+
+```text
+SecurityContext context = SecurityContextHolder.getContext();
+Authentication authentication = context.getAuthentication();
+assert(authentication.isAuthenticated);
+```
+
+정리하면, SecurityContextHolder > SecurityContext > Authentication(**isAuthenticated 및 principal을 필드로 가지고 있는 객체이며, 또한 principal은 user 엔티티같은 것을 사용해 얼마든지 사용자 정의할 수 있다** : **The type of the Principal in an Authentication is dependent on the AuthenticationManager used to validate the authentication**)이다.
+
+웹 엔드포인트에서 현재 인증된 사용자에 대한 액세스가 필요한 경우 다음과 같이 **@RequestMapping에서 메서드 파라미터**를 사용할 수 있다.
+
+```text
+@RequestMapping("/foo")
+public String foo(@AuthenticationPrincipal User user) {
+  ... // do stuff with user
+}
+```
+
+`@AuthenticationPrincipal`는 SecurityContext에서 Authentication을 꺼내고 getPrincipal() 메서드를 호출하여 메서드 파라미터를 생성하는 역할을 수행한다. 또한, Spring Security가 사용 중인 경우 **HttpServletRequest의 Principal은 Authentication**이므로 직접 사용할 수도 있다. 아래는 직접 **Principal**을 사용하는 예시이다. 
+
+```text
+@RequestMapping("/foo")
+public String foo(Principal principal) {
+  Authentication authentication = (Authentication) principal;
+  User = (User) authentication.getPrincipal();
+  ... // do stuff with user
+}
+```
