@@ -5,6 +5,7 @@ Spring Security
 [Spring Security 5.6.2(2022-03-24 current version) 공식문서](https://docs.spring.io/spring-security/reference/index.html)   
 [Spring Security 공식 가이드 - Securing a Web Application](https://spring.io/guides/gs/securing-web/)  
 [Spring Security 공식 토픽 - Spring Security Architecture](https://spring.io/guides/topicals/spring-security-architecture)  
+[Spring Security 공식 샘플 - Spring Security 5.6.x Samples](https://github.com/spring-projects/spring-security-samples/tree/5.6.x)   
 
 위 **3가지 링크**가, 2022-03-26 현재 스프링 공식문서 프로젝트 페이지에서 스프링 시큐리티를 소개하는 모든 페이지이다.  
 Spring Security Oauth 프로젝트는 deprecated되어 Spring Security에서 Oauth2.0을 지원한다.  
