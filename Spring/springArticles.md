@@ -28,3 +28,9 @@ Spring Articles
 - Spring에서의 transaction원리  
 [1. 스프링 @트랜잭션과 스프링 AOP - 스프링 @Transactional이 제대로 적용되지 않는 이유를 이해하려면 프록시 기반의 스프링 AOP에 대해 알아야 합니다.](https://www.whiteship.me/spring-transactional-and-spring-aop/)  
 [2. [Spring] @Transactional 사용시 주의해야할 점](https://mommoo.tistory.com/92)
+
+- Checked Exception vs Unchecked Exception  
+[1. [Java] Checked Exception vs Unchecked Exception 정리](https://devlog-wjdrbs96.tistory.com/351)  
+
+- Container  
+[1. ServletContainer와 SpringContainer는 무엇이 다른가? ](https://jypthemiracle.medium.com/servletcontainer%EC%99%80-springcontainer%EB%8A%94-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%A4%EB%A5%B8%EA%B0%80-626d27a80fe5)  
