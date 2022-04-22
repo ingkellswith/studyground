@@ -24,7 +24,7 @@
     * [Spring MVC](Spring/SpringMVC/springMVC.md)
   * Spring Security
     * [Spring Security](Spring/SpringSecurity/springSecurity.md)
-    * [Spring Security](Spring/SpringSecurity/springSecurityConcepts.md)
+    * [Spring Security Concepts](Spring/SpringSecurity/springSecurityConcepts.md)
 * [React](React/README.md)
   * [Articles](React/reactArticles.md)
   * [MVVM 아키텍처](React/mvvm.md)
