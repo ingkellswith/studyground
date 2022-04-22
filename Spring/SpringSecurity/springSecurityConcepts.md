@@ -46,4 +46,13 @@
    5. 서버에서 로그인 페이지를 내려준다.
 2. 아래는 username & password 인증과정이다. **Servlet Applications - Authentication - Authentication Architecture** 에서 살펴봤던 `AbstractAuthenticationProcessingFilter`의 인증과정과 상당히 유사하며, `AbstractAuthenticationProcessingFilter`이 `UsernamePasswordAuthenticationFilter`로 바뀌고 `Authentication` 객체가 `UsernamePasswordAuthenticationToken`으로 바뀌었다. 여기에서 `UsernamePasswordAuthenticationFilter`는 `AbstractAuthenticationProcessingFilter`을 상속한 클래스이다.
 ![image](https://docs.spring.io/spring-security/reference/_images/servlet/authentication/unpwd/usernamepasswordauthenticationfilter.png)
+
+# [Servlet Applications - Authentication - Username/Password - Password Storage](https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/user-details.html)
+1. `UserDetails`는 `UserDetailsService`에 의해 리턴된다.
+2. `DaoAuthenticationProvider`는 `UserDetails`이 유효한지 체크한 후 `Authentication`을 리턴한다.
+3. `UserDetailsService`는 username, password, and other attributes를 받기 위해 `DaoAuthenticationProvider`에 의해 사용된다. Spring Security는 `UserDetailsService`를 구현한 in-memory와 JDBC의 두 가지 방식의 구현체를 제공한다.
+4. ` DaoAuthenticationProvider`는 `AuthenticationProvider`의 구현체 중 하나로 `UserDetailsService`와`PasswordEncoder`를 사용해서 username과 password를 인증한다.
+![image](https://docs.spring.io/spring-security/reference/_images/servlet/authentication/unpwd/daoauthenticationprovider.png)
    
+# [Servlet Applications - Authorization - Authorization Architecture](https://docs.spring.io/spring-security/reference/servlet/authorization/architecture.html)
+1. 
