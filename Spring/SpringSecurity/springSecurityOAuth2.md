@@ -3,18 +3,18 @@
 스프링부트가 아닌 스프링에서 스프링 시큐리티와 OAuth2를 기반으로 한 SNS로그인을 구현하면서 얻게 된 지식을 적습니다. Spring Security로 구현하는 OAuth2는 대부분의 한글 자료가 스프링 부트 기반이었기에, 스프링 기반으로 구현하기 위해서 클래스 상속 구조와 여러 객체의 메소드를 보는 것이 코드 작성에 많은 도움이 되었습니다.
 
 ### OAuth 2.0와 주요 3단계 프로세스
-- 공식문서 : [https://oauth.net/2/](https://oauth.net/2/)
+공식문서 : [https://oauth.net/2/](https://oauth.net/2/)
 
 OAuth 2.0는 OAuth 2.0은 인증을 위한 업계 표준 프로토콜으로 커스텀 애플리케이션에서 다른 리소스 서버(ex. 카카오, 네이버)에 인증된 사용자 정보(ex. 이메일, 생년월일 등의 제한적 정보)를 가져올 수 있다. **가져온 정보로 인증, 인가 등의 로직을 구현하는 것은 사용자의 몫이다.** 보통 인가 코드 발급, 토큰 발급, 사용자 정보 가져오기의 3단계의 프로세스로 나눌 수 있다. 아래는 설명이 너무 깔끔하게 되어 있어서 카카오 로그인 공식문서에서 가져와 봤다.
 
-![image](https://developers.kakao.com/docs/latest/ko/assets/style/images/kakaologin/kakaologin_sequence.png)
+![kakao login process](https://developers.kakao.com/docs/latest/ko/assets/style/images/kakaologin/kakaologin_sequence.png)
 
 1. 인가 코드 발급 : 사용자가 리소스 서버에 인증된 사용자인지 검증하는 과정이다. 예를 들어 카카오를 리소스 서버로 사용할 것이라면 사용자가 카카오에 인증된 사용자임을 확인해야 한다. 위 그림에서도 볼 수 있듯이 이는 보통 자바스크립트로 클라이언트 측에서 리소스 서버로 요청을 보내는 형태로 이루어진다. 리소스 서버 측에서는 클라이언트 측의 요청을 받으면 로그인 화면을 내려주고, 동의 항목까지 응답받으면 이 정보를 사용할 서버로 **인가 코드**와 함께 **redirect**하게 된다.
 spring security에서는 `"{baseUrl}/{action}/oauth2/code/{registrationId}"`이 default설정의 redirect url이다. 예를 들어, example.com에서 사용할 것이고, 로그인 액션에 사용할 것이며, 리소소 서버로는 카카오를 사용할 것이라면 `"https://example.com/login/oauth2/code/kakao"`가 redirect url이 되겠다. 당연히 이 redirect url은 바꿀 수 있다. 다만 스프링에서 바꾸었다면, 리소스 서버에도 그에 해당하는 redirect url설정을 필수적으로 해야 한다.
 
 2. 토큰 발급 : 인가 코드를 받았다면, 인가 코드를 요청에 담아 토큰 발급 url로 보낸다. 그 후 리소스 서버는 받은 요청이 유효한 클라이언트가 보냈는지 확인하고 토큰을 발급해준다. 이 토큰은 사용하는 입장에서는 이 토큰이 무엇을 의미하는지 몰라도 된다. 사용자는 그저 이 토큰이 마치 호텔키처럼 유효하게 동작할 것이라는 점만 알면 된다. 물론 당연히 리소스 서버에서는 이 토큰을 해석하여 어떤 유저의 정보에 접근할 수 있는지 판단해야 한다. 호텔 락도어가 호텔키를 해석하여 방번호와 호텔키가 상응하는지 확인하는 것처럼 말이다.
 
-- access token를 호텔 키카드에 빗대어 간단히 설명한 유튜브 : [https://www.youtube.com/watch?v=BNEoKexlmA4&ab_channel=OktaDev](https://www.youtube.com/watch?v=BNEoKexlmA4&ab_channel=OktaDev)
+access token를 호텔 키카드에 빗대어 간단히 설명한 유튜브 : [https://www.youtube.com/watch?v=BNEoKexlmA4&ab_channel=OktaDev](https://www.youtube.com/watch?v=BNEoKexlmA4&ab_channel=OktaDev)
 
 3. 사용자 정보 가져오기 : 토큰을 받았다면, 토큰을 Authorization헤더에 담아 사용자 정보 조회 url로 요청한다. 
 
@@ -26,7 +26,7 @@ OAuth 2.0은 REST API를 사용하는 모든 백엔드 애플리케이션에서 
     
 OAuth2.0을 사용하기 위해서 사용하고 싶은 서비스에 로그인해서 어떤 애플리케이션에서 이 서비스에 등록된 사용자의 정보를 가져오고 싶다고 알려줘야 한다. 예를 들어 카카오를 리소스 서버로 사용할 수 있다. 사용법은 카카오 공식 문서에 자세히 나와 있다.
 
-- 카카오 로그인 공식문서 : [https://developers.kakao.com/docs/latest/ko/kakaologin/common](https://developers.kakao.com/docs/latest/ko/kakaologin/common)
+카카오 로그인 공식문서 : [https://developers.kakao.com/docs/latest/ko/kakaologin/common](https://developers.kakao.com/docs/latest/ko/kakaologin/common)
   
 2. **사용자(애플리케이션)에 등록정보 설정하기**
     
@@ -80,7 +80,7 @@ private ClientRegistration kakaoClientRegistration() {
 }
 ```
     
-- spring security without boot 공식 문서 참고 코드 : [https://docs.spring.io/spring-security/reference/servlet/oauth2/login/core.html#oauth2login-javaconfig-wo-boot](https://docs.spring.io/spring-security/reference/servlet/oauth2/login/core.html#oauth2login-javaconfig-wo-boot)
+spring security without boot 공식 문서 참고 코드 : [https://docs.spring.io/spring-security/reference/servlet/oauth2/login/core.html#oauth2login-javaconfig-wo-boot](https://docs.spring.io/spring-security/reference/servlet/oauth2/login/core.html#oauth2login-javaconfig-wo-boot)
   
 3. **OAuth2 로그인 등록하기**
     
