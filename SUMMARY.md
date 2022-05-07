@@ -26,6 +26,7 @@
     * [Spring Security](Spring/SpringSecurity/springSecurity.md)
     * [Spring Security Concepts](Spring/SpringSecurity/springSecurityConcepts.md)
     * [XSS and CSRF](Spring/SpringSecurity/xssAndCsrf.md)
+    * [스프링 시큐리티에서의 OAuth2](Spring/SpringSecurity/springSecurityOAuth2.md)
 * [React](React/README.md)
   * [Articles](React/reactArticles.md)
   * [MVVM 아키텍처](React/mvvm.md)
