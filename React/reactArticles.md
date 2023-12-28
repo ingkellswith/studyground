@@ -9,3 +9,7 @@ React Articles
 
 - Binding  
 [1. 당신이 몰랐을수도 있는 React Binding 에 관한 사실](https://siosio3103.medium.com/react-binding-%EC%96%B4%EB%96%A4-%EB%B0%A9%EC%8B%9D%EC%9D%84-%EC%8D%A8%EC%95%BC%ED%95%A0%EA%B0%80-be5894ba1dae)  
+
+- GraphQL
+[1. GraphQL 개념잡기](https://tech.kakao.com/2019/08/01/graphql-basic/)
+[2. 스키마 & 타입](https://graphql-kr.github.io/learn/schema/)

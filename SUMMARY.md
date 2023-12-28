@@ -21,7 +21,7 @@
     * [Auditing](Spring/JPA/auditing.md)
     * [QueryDSL](Spring/JPA/querydsl.md)
   * Spring MVC
-    * [Spring MVC](Spring/SpringMVC/springMVC.md)
+    * [Spring MVC](Spring/SpringMVC/springMvc.md)
   * Spring Security
     * [Spring Security](Spring/SpringSecurity/springSecurity.md)
     * [Spring Security Concepts](Spring/SpringSecurity/springSecurityConcepts.md)

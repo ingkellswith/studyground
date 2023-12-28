@@ -30,3 +30,4 @@ Java And Kotlin Articles
 - kotlin의 in & out  
 [1. 코틀린 제네릭, in? out?(번역본)](https://medium.com/mj-studio/%EC%BD%94%ED%8B%80%EB%A6%B0-%EC%A0%9C%EB%84%A4%EB%A6%AD-in-out-3b809869610e)  
 [2. 코틀린의 제네릭(원어)](https://kotlinlang.org/docs/generics.html)  
+[3. Out-projected type 'ArrayList<*>' prohibits the use of 'public open fun add(index: Int, element: E): Unit defined in java.util.ArrayList' - StackOverFlow](https://stackoverflow.com/questions/40519921/out-projected-type-arraylist-prohibits-the-use-of-public-open-fun-addinde)  
