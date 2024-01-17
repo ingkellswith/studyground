@@ -1,11 +1,6 @@
 # json-config-name
 
-- [AWS](AWS/README.md)
-  * [awsArticles](AWS/awsArticles.md)
-  * [saaQuestion](AWS/saaQuestion.md)
-  * [saaStudy](AWS/saaStudy.md)
-  * [securityGroup](AWS/securityGroup.md)
-- BackEnd
+- 백엔드
   - [Spring](BackEnd/Spring/README.md)
     - Concepts
       * [dtoVo](BackEnd/Spring/Concepts/dtoVo.md)
@@ -34,7 +29,30 @@
       * [springSecurityOAuth2](BackEnd/Spring/SpringSecurity/springSecurityOAuth2.md)
       * [xssAndCsrf](BackEnd/Spring/SpringSecurity/xssAndCsrf.md)
     * [springArticles](BackEnd/Spring/springArticles.md)
-- [ComputerScience](ComputerScience/README.md)
+- 프론트엔드
+  - [React](FrontEnd/React/README.md)
+    * [mvvm](FrontEnd/React/mvvm.md)
+    * [noIndexForKey](FrontEnd/React/noIndexForKey.md)
+    * [reactArticles](FrontEnd/React/reactArticles.md)
+    * [reduxThunk](FrontEnd/React/reduxThunk.md)
+    * [SSR](FrontEnd/React/SSR.md)
+    * [tsSetting](FrontEnd/React/tsSetting.md)
+- AWS
+  * [awsArticles](AWS/awsArticles.md)
+  * [saaQuestion](AWS/saaQuestion.md)
+  * [saaStudy](AWS/saaStudy.md)
+  * [securityGroup](AWS/securityGroup.md)
+- 프로그래밍 언어
+  - [JavaAndKotlin](ProgrammingLanguage/JavaAndKotlin/README.md)
+    * [dataClass](ProgrammingLanguage/JavaAndKotlin/dataClass.md)
+    * [garbageCollector](ProgrammingLanguage/JavaAndKotlin/garbageCollector.md)
+    * [getterSetter](ProgrammingLanguage/JavaAndKotlin/getterSetter.md)
+    * [hashcode](ProgrammingLanguage/JavaAndKotlin/hashcode.md)
+    * [javaAndKotlinArticles](ProgrammingLanguage/JavaAndKotlin/javaAndKotlinArticles.md)
+    * [pattern](ProgrammingLanguage/JavaAndKotlin/pattern.md)
+  - [Javascript](ProgrammingLanguage/Javascript/README.md)
+    * [javascriptArticles](ProgrammingLanguage/Javascript/javascriptArticles.md)
+- 기타 주제
   - [DB](ComputerScience/DB/README.md)
     - MySql
       * [index](ComputerScience/DB/MySql/index.md)
@@ -53,21 +71,3 @@
     * [keepAlive](ComputerScience/Network/keepAlive.md)
     * [networkArticles](ComputerScience/Network/networkArticles.md)
   * [csArticles](ComputerScience/csArticles.md)
-- FrontEnd
-  - [React](FrontEnd/React/README.md)
-    * [mvvm](FrontEnd/React/mvvm.md)
-    * [noIndexForKey](FrontEnd/React/noIndexForKey.md)
-    * [reactArticles](FrontEnd/React/reactArticles.md)
-    * [reduxThunk](FrontEnd/React/reduxThunk.md)
-    * [SSR](FrontEnd/React/SSR.md)
-    * [tsSetting](FrontEnd/React/tsSetting.md)
-- ProgrammingLanguage
-  - [JavaAndKotlin](ProgrammingLanguage/JavaAndKotlin/README.md)
-    * [dataClass](ProgrammingLanguage/JavaAndKotlin/dataClass.md)
-    * [garbageCollector](ProgrammingLanguage/JavaAndKotlin/garbageCollector.md)
-    * [getterSetter](ProgrammingLanguage/JavaAndKotlin/getterSetter.md)
-    * [hashcode](ProgrammingLanguage/JavaAndKotlin/hashcode.md)
-    * [javaAndKotlinArticles](ProgrammingLanguage/JavaAndKotlin/javaAndKotlinArticles.md)
-    * [pattern](ProgrammingLanguage/JavaAndKotlin/pattern.md)
-  - [Javascript](ProgrammingLanguage/Javascript/README.md)
-    * [javascriptArticles](ProgrammingLanguage/Javascript/javascriptArticles.md)
